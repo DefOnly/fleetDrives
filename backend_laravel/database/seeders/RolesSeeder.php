@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Course;
 use App\Models\Level;
 use App\Models\User;
+use App\Models\Van;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -80,6 +81,34 @@ class RolesSeeder extends Seeder
             [
                 'nameLevel' => 'OCTAVO BÁSICO',
             ]
+        ]);
+
+        Van::insert([
+            [
+                'brand' => 'MERCEDES',
+                'model' => 'MERCEDES SPINTER 515',
+                'unique_code' => 'GZHV-25',
+            ],
+            [
+                'brand' => 'TOYOTA',
+                'model' => 'TOYOTA HIACE 2016',
+                'unique_code' => 'HSHD 18',
+            ],
+            [
+                'brand' => 'NISSAN',
+                'model' => 'NISSAN NV350 WIDE 2.5',
+                'unique_code' => 'LCFF 99',
+            ],
+            [
+                'brand' => 'HYUNDAY',
+                'model' => 'HYUNDAY H1 GLS 2.5',
+                'unique_code' => 'GDRZ 88',
+            ],
+            [
+                'brand' => 'MAXUS',
+                'model' => 'MAXUS G10',
+                'unique_code' => 'LHZG19',
+            ],
         ]);
         //    Player::factory(30)->create();
     }

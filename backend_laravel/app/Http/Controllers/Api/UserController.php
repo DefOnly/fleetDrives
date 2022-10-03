@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Driver;
 
 class UserController extends Controller
 {
@@ -17,76 +18,93 @@ class UserController extends Controller
     {
         $course = $request->route()->parameter('course');
         if ($course == 'Prekinder') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Kinder') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 2)
                 ->get();
             return $students;
         } else if ($course == 'Primero Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 3)
                 ->get();
             return $students;
         } else if ($course == 'Segundo Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 4)
                 ->get();
             return $students;
         } else if ($course == 'Tercero Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 5)
                 ->get();
             return $students;
         } else if ($course == 'Cuarto Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 6)
                 ->get();
             return $students;
         } else if ($course == 'Quinto Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 7)
                 ->get();
             return $students;
         } else if ($course == 'Sexto Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 8)
                 ->get();
             return $students;
         } else if ($course == 'Séptimo Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 9)
                 ->get();
             return $students;
         } else if ($course == 'Octavo Básico') {
-            $students = User::select('*')
+            $students = User::select('rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'id_zone', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 10)
                 ->get();
             return $students;
         }
+    }
+
+    public function getAllDrivers()
+    {
+        $drivers = Driver::select('*')
+            ->join('van', 'van.id', '=', 'drivers.id_car')
+            ->get();
+        return $drivers;
+    }
+
+    public function getStudentInfo(Request $request)
+    {
+        $studentInfo = $request->route()->parameter('info');
+        $student = User::select('*')
+            ->where('users.rut', '=', $studentInfo)
+            ->get();
+        return $student;
     }
 
     /**

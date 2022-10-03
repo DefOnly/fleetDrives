@@ -45,7 +45,7 @@ class CreateUsersTable extends Migration
             $table->integer('id_level');
             $table->integer('id_zone');
             $table->integer('id_attorney');
-            $table->foreign('id_driver')
+            $table->foreignId('id_driver')
                 ->nullable() // <-- IMPORTANTE: LA COLUMNA DEBE ACEPTAR NULL COMO VALOR VALIDO
                 ->onDelete('SET NULL')
                 ->references('id')

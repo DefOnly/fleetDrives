@@ -20,17 +20,17 @@ import RTL from "views/admin/rtl";
 import SignInCentered from "views/auth/signIn";
 
 const routes = [
+  // {
+  //   name: "Inicio",
+  //   layout: "/admin",
+  //   path: "/default",
+  //   icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+  //   component: MainDashboard,
+  // },
   {
-    name: "Inicio",
+    name: "Gestión de Usuarios",
     layout: "/admin",
     path: "/default",
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
-    component: MainDashboard,
-  },
-  {
-    name: "Estudiantes",
-    layout: "/admin",
-    path: "/nft-marketplace",
     icon: <Icon as={MdPerson} width="20px" height="20px" color="inherit" />,
     component: NFTMarketplace,
     secondary: true,

@@ -26,4 +26,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
     Route::get('students/{course}',  [UserController::class, 'index']);
+    Route::get('drivers',  [UserController::class, 'getAllDrivers']);
+    Route::get('studentInfo/{info}',  [UserController::class, 'getStudentInfo']);
 });

@@ -79,7 +79,7 @@ export default function Marketplace() {
               direction={{ base: "column", md: "row" }}
               align={{ base: "start", md: "center" }}>
               <Text color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
-                NIVELES
+                ESTUDIANTES - NIVELES
               </Text>
               {/* <Flex
                 align='center'

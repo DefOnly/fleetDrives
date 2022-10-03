@@ -25,6 +25,7 @@ import { MdArrowDownward } from "react-icons/md";
 import React, { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import TableStudents from "./TableStudents";
+import TableDrivers from "./TableDrivers";
 
 export default function Students(props) {
   const { image, name, author, bidders, download, currentbid } = props;
@@ -33,11 +34,11 @@ export default function Students(props) {
   const textColorBid = useColorModeValue("brand.500", "white");
 
   const [students, setStudents] = useState([]);
+  const [drivers, setDrivers] = useState([]);
   const [isShown, setIsShown] = useState(false);
   const [course, setCourse] = useState("");
-  const [countStudents, setCountStudents] = useState(0);
+  const [count, setCount] = useState(0);
   const endPoint = "http://localhost:8000/api";
-  let count = 0;
   const [show, setShow] = useState(false);
 
   //  useEffect(() => {
@@ -50,15 +51,27 @@ export default function Students(props) {
 
   const getAllStudents = async (event, param) => {
     const response = await axios.get(`${endPoint}/students/${param}/`);
+    let count = 0;
     setCourse(param);
     setStudents(response.data);
     let result = response.data;
     result.map((row) => {
       count++;
     });
-    setCountStudents(count);
+    setCount(count);
     setIsShown(true);
-    // setShow(!show);
+  };
+
+  const getAllDrivers = async (event) => {
+    const response = await axios.get(`${endPoint}/drivers/`);
+    let count = 0;
+    setDrivers(response.data);
+    let result = response.data;
+    result.map((row) => {
+      count++;
+    });
+    setCount(count);
+    setShow(!show);
   };
   return (
     <Card p="20px">
@@ -166,7 +179,7 @@ export default function Students(props) {
               mt="25px"
             >
               <Text fontWeight="700" fontSize="1.1rem" color={textColorBid}>
-                Cantidad Actual: {countStudents}
+                Cantidad Actual: {count}
               </Text>
               {/* <Link
                 href={download}
@@ -192,7 +205,7 @@ export default function Students(props) {
                   <MenuItem
                     onClick={(event) => getAllStudents(event, "Prekinder")}
                   >
-                    Prekinder 
+                    Prekinder
                   </MenuItem>
                   <MenuItem
                     onClick={(event) => getAllStudents(event, "Kinder")}
@@ -293,7 +306,7 @@ export default function Students(props) {
               mt="25px"
             >
               <Text fontWeight="700" fontSize="1.1rem" color={textColorBid}>
-                Cantidad Actual: {countStudents}
+                Cantidad Actual: {count}
               </Text>
               {/* <Link
               href={download}
@@ -448,10 +461,10 @@ export default function Students(props) {
               }}
               mt="25px"
             >
-              <Text fontWeight="700" fontSize="sm" color={textColorBid}>
-                Cantidad Actual: {currentbid}
+              <Text fontWeight="700" fontSize="1.1rem" color={textColorBid}>
+                Cantidad Actual: {count}
               </Text>
-              <Link
+              {/* <Link
                 href={download}
                 mt={{
                   base: "0px",
@@ -460,20 +473,27 @@ export default function Students(props) {
                   xl: "10px",
                   "2xl": "0px",
                 }}
+              > */}
+              <Button
+                onClick={(event) => getAllDrivers(event)}
+                variant="darkBrand"
+                color="white"
+                fontSize="sm"
+                fontWeight="500"
+                borderRadius="70px"
+                px="24px"
+                py="5px"
+                rightIcon={<MdArrowDownward fontSize="1.2rem" />}
               >
-                <Button
-                  variant="darkBrand"
-                  color="white"
-                  fontSize="sm"
-                  fontWeight="500"
-                  borderRadius="70px"
-                  px="24px"
-                  py="5px"
-                >
-                  Ver conductores
-                </Button>
-              </Link>
+                Ver conductores
+              </Button>
+              {/* </Link> */}
             </Flex>
+            {
+              <Collapse startingHeight={1} in={show}>
+                <TableDrivers drivers={drivers} />
+              </Collapse>
+            }
           </Flex>
         )}
       </Flex>
