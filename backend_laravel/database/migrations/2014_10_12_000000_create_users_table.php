@@ -17,9 +17,9 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('rutDriver');
             $table->string('nameDriver');
-            $table->string('lastNameDP');
-            $table->string('lastNameDM');
-            $table->string('enterprise');
+            $table->string('lastNameDP')->nullable();
+            $table->string('lastNameDM')->nullable();
+            $table->string('enterprise')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
@@ -44,7 +44,8 @@ class CreateUsersTable extends Migration
             $table->integer('id_profile'); /** id del Perfil del usuario (1. Administrador, 2. Estudiante) **/
             $table->integer('id_level');
             $table->integer('id_zone');
-            $table->integer('id_attorney');
+            $table->integer('id_agent');
+            $table->integer('id_province');
             $table->foreignId('id_driver')
                 ->nullable() // <-- IMPORTANTE: LA COLUMNA DEBE ACEPTAR NULL COMO VALOR VALIDO
                 ->onDelete('SET NULL')

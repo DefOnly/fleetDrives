@@ -150,6 +150,7 @@ const TableStudents = ({ students, course }) => {
           })}
         </Tbody>
       </Table>
+      {/* Editar Estudiante */}
       <Modal
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
@@ -176,25 +177,52 @@ const TableStudents = ({ students, course }) => {
                   placeholder="Nombres y Apellidos"
                   value={
                     studentInfo[0].name +
+                    " " +
                     studentInfo[0].lastNameP +
+                    " " +
                     studentInfo[0].lastNameM
                   }
                 />
               </FormControl>
               <FormControl mt={4}>
-                <FormLabel>Dirección</FormLabel>
-                <Input placeholder="" />
+                <FormLabel>Sector</FormLabel>
+                <Input placeholder="" value={studentInfo[0].place} />
               </FormControl>
               <FormControl mt={4}>
                 <FormLabel>Comuna</FormLabel>
-                <Input placeholder="" />
+                <Select>
+                  <option value="1">Lago Ranco</option>
+                  <option value="2">Río Bueno</option>
+                  <option value="3">Futrono</option>
+                  <option value="4">Panguipulli</option>
+                  <option value="5">La Unión</option>
+                  <option value="6">Paillaco</option>
+                  <option value="7">Los Lagos</option>
+                  <option value="8">Corral</option>
+                  <option value="9">Valdivia</option>
+                  <option value="10">Máfil</option>
+                  <option value="11">Mariquina</option>
+                  <option value="12">Lanco</option>
+                </Select>
               </FormControl>
               <FormControl mt={4}>
                 <FormLabel>Sexo</FormLabel>
-                <Select placeholder="Seleccione sexo">
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                </Select>
+                {studentInfo[0].gender === "M" && (
+                  <Select>
+                    <option selected value="M">
+                      Masculino
+                    </option>
+                    <option value="F">Femenino</option>
+                  </Select>
+                )}
+                {studentInfo[0].gender === "F" && (
+                  <Select>
+                    <option value="M">Masculino</option>
+                    <option selected value="F">
+                      Femenino
+                    </option>
+                  </Select>
+                )}
               </FormControl>
               <FormControl mt={4}>
                 <FormLabel>Correo (Opcional):</FormLabel>
@@ -214,6 +242,19 @@ const TableStudents = ({ students, course }) => {
                   <option value="Séptimo Básico">Séptimo Básico</option>
                   <option value="Octavo Básico">Octavo Básico</option>
                 </Select>
+              </FormControl>
+              <ModalHeader>Datos del Apoderado</ModalHeader>
+              <FormControl>
+                <FormLabel>Apoderado</FormLabel>
+                <Input value={studentInfo[0].nameAgent} />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Teléfono</FormLabel>
+                <Input value={studentInfo[0].phone} />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>Correo (Opcional)</FormLabel>
+                <Input placeholder="" />
               </FormControl>
             </ModalBody>
             <ModalFooter>

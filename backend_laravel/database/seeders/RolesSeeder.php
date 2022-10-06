@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
 use App\Models\Level;
+use App\Models\Zone;
 use App\Models\User;
 use App\Models\Van;
+use App\Models\Province;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,8 @@ class RolesSeeder extends Seeder
                 'id_profile' => 1,
                 'id_level' => 0,
                 'id_zone' => 0,
-                'id_attorney' => 0,
+                'id_agent' => 0,
+                'id_province' => 0,
             ],
             [
                 'rut' => '13402004-0',
@@ -46,7 +48,8 @@ class RolesSeeder extends Seeder
                 'id_profile' => 1,
                 'id_level' => 0,
                 'id_zone' => 0,
-                'id_attorney' => 0,
+                'id_agent' => 0,
+                'id_province' => 0,
             ]
         ]);
 
@@ -109,6 +112,164 @@ class RolesSeeder extends Seeder
                 'model' => 'MAXUS G10',
                 'unique_code' => 'LHZG19',
             ],
+        ]);
+
+        Province::insert([
+            [
+                'nameProvince' => 'Lago Ranco',
+            ],
+            [
+                'nameProvince' => 'Río Bueno',
+            ],
+            [
+                'nameProvince' => 'Futrono',
+            ],
+            [
+                'nameProvince' => 'Panguipulli',
+            ],
+            [
+                'nameProvince' => 'La Unión',
+            ],
+            [
+                'nameProvince' => 'Paillaco',
+            ],
+            [
+                'nameProvince' => 'Los Lagos',
+            ],
+            [
+                'nameProvince' => 'Corral',
+            ],
+            [
+                'nameProvince' => 'Valdivia',
+            ],
+            [
+                'nameProvince' => 'Máfil',
+            ],
+            [
+                'nameProvince' => 'Mariquina',
+            ],
+            [
+                'nameProvince' => 'Lanco',
+            ],
+        ]);
+
+        Zone::insert([
+            [
+                'place' => 'POCURA',                
+            ],
+            // id = 1
+            [
+                'place' => 'RIÑINAHUE',
+            ],  
+            // id = 2
+            [
+                'place' => 'QUIRRASCO',                 
+            ],
+            // id = 3
+            [
+                'place' => 'RIÑINAHUE CENTRO',              
+            ],
+            // id = 4
+            [
+                'place' => 'C LEAL',    
+            ],
+            // id = 5
+            [
+                'place' => 'EL ARENAL',                 
+            ],
+            // id = 6
+            [
+                'place' => 'CALCURRUPE',
+            ],  
+            // id = 7
+            [
+                'place' => 'EPULAFQUEN',                
+            ],
+            // id = 8
+            [
+                'place' => 'LAS QUEMAS',                
+            ],
+            // id = 9
+            [
+                'place' => 'RIÑINAHUE ALTO',    
+            ],
+            // id = 10
+            [
+                'place' => 'FUTANGUE',              
+            ],
+            // id = 11
+            [
+                'place' => 'LAS MOLIDAS',   
+            ],
+            // id = 12
+            [
+                'place' => 'RANQUIL',               
+            ],
+            // id = 13
+            [
+                'place' => 'LAGO RANCO',                
+            ],
+            // id = 14
+            [
+                'place' => 'LOS ALAMOS',    
+            ],
+            // id = 15
+            [
+                'place' => 'PASO LA MULA    ',            
+            ],
+            // id = 16
+            [
+                'place' => 'IGLESIA CATOLICA',  
+            ],
+            // id = 17
+            [
+                'place' => 'NILAHUE',               
+            ],
+            // id = 18
+            [
+                'place' => 'MAYAY',                 
+            ],
+            // id = 19
+            [
+                'place' => 'ILIHUE',
+            ],  
+            // id = 20
+            [
+                'place' => 'PUÑIRRE',               
+            ],
+            // id = 21
+            [
+                'place' => 'ILLAHUAPI',
+            ],  
+            // id = 22
+            [
+                'place' => 'PICHICO',               
+            ],
+            // id = 23
+            [
+                'place' => 'CHANCO',                
+            ],
+            // id = 24
+            [
+                'place' => 'CARRAN',
+            ],  
+            // id = 25
+            [
+                'place' => 'PITREÑO',               
+            ],
+            // id = 26
+            [
+                'place' => 'CALCURUPE',
+            ],  
+            // id = 27
+            [
+                'place' => 'CALCURRUPE ALTO',               
+            ],
+            // id = 28
+            [
+                'place' => 'CALCURRUPE BAJO',               
+            ],
+            // id = 29
         ]);
         //    Player::factory(30)->create();
     }

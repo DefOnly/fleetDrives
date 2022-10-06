@@ -153,7 +153,7 @@ const TableDrivers = ({ drivers }) => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Editar Estudiante</ModalHeader>
+          <ModalHeader>Editar Conductor</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
@@ -165,38 +165,20 @@ const TableDrivers = ({ drivers }) => {
               <Input placeholder="Nombres y Apellidos" />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Dirección</FormLabel>
+              <FormLabel>Empresa de Contrato</FormLabel>
               <Input placeholder="" />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Comuna</FormLabel>
+              <FormLabel>Modelo de Auto</FormLabel>
               <Input placeholder="" />
             </FormControl>
             <FormControl mt={4}>
-              <FormLabel>Sexo</FormLabel>
-              <Select placeholder="Seleccione sexo">
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-              </Select>
+              <FormLabel>Patente</FormLabel>
+              <Input placeholder="" />
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Correo (Opcional):</FormLabel>
               <Input placeholder="" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Nivel</FormLabel>
-              <Select placeholder="Seleccione nivel">
-                <option value="Prekinder">Prekinder</option>
-                <option value="Kinder">Kinder</option>
-                <option value="Primero Básico">Primero Básico</option>
-                <option value="Segundo Básico">Segundo Básico</option>
-                <option value="Tercero Básico">Tercero Básico</option>
-                <option value="Cuarto Básico">Cuarto Básico</option>
-                <option value="Quinto Básico">Quinto Básico</option>
-                <option value="Sexto Básico">Sexto Básico</option>
-                <option value="Séptimo Básico">Séptimo Básico</option>
-                <option value="Octavo Básico">Octavo Básico</option>
-              </Select>
             </FormControl>
           </ModalBody>
           <ModalFooter>

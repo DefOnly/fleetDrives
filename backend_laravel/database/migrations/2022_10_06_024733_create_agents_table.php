@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVanTable extends Migration
+class CreateAgentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateVanTable extends Migration
      */
     public function up()
     {
-        Schema::create('van', function (Blueprint $table) {
+        Schema::create('agents', function (Blueprint $table) {
             $table->id();
-            $table->string('brand');
-            $table->string('model');
-            $table->string('unique_code'); //Patente
+            $table->string('nameAgent');
+            $table->string('phone');
+            $table->string('email');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateVanTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('van');
+        Schema::dropIfExists('agents');
     }
 }

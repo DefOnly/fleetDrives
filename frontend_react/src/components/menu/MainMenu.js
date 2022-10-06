@@ -183,68 +183,6 @@ export default function Banner(props) {
           </Flex>
         </MenuItem>
       </MenuList>
-      <Modal
-        initialFocusRef={initialRef}
-        finalFocusRef={finalRef}
-        isOpen={isOpen}
-        onClose={onClose}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Agregar Estudiante</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>Rut</FormLabel>
-              <Input ref={initialRef} placeholder="Rut" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Nombres y Apellidos</FormLabel>
-              <Input placeholder="Nombres y Apellidos" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Dirección</FormLabel>
-              <Input placeholder="" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Comuna</FormLabel>
-              <Input placeholder="" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Sexo</FormLabel>
-              <Select placeholder="Seleccione sexo">
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-              </Select>
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Correo (Opcional):</FormLabel>
-              <Input placeholder="" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Nivel</FormLabel>
-              <Select placeholder="Seleccione nivel">
-                <option value="Prekinder">Prekinder</option>
-                <option value="Kinder">Kinder</option>
-                <option value="Primero Básico">Primero Básico</option>
-                <option value="Segundo Básico">Segundo Básico</option>
-                <option value="Tercero Básico">Tercero Básico</option>
-                <option value="Cuarto Básico">Cuarto Básico</option>
-                <option value="Quinto Básico">Quinto Básico</option>
-                <option value="Sexto Básico">Sexto Básico</option>
-                <option value="Séptimo Básico">Séptimo Básico</option>
-                <option value="Octavo Básico">Octavo Básico</option>
-              </Select>
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3}>
-              Agregar
-            </Button>
-            <Button onClick={onClose}>Cancelar</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Menu>
   );
 }

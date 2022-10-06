@@ -93,7 +93,7 @@ class UserController extends Controller
     public function getAllDrivers()
     {
         $drivers = Driver::select('*')
-            ->join('van', 'van.id', '=', 'drivers.id_car')
+            ->join('vans', 'vans.id', '=', 'drivers.id_car')
             ->get();
         return $drivers;
     }
@@ -102,6 +102,9 @@ class UserController extends Controller
     {
         $studentInfo = $request->route()->parameter('info');
         $student = User::select('*')
+            ->join('provinces', 'provinces.id', '=', 'users.id_province')
+            ->join('zones', 'zones.id', '=', 'users.id_zone')
+            ->join('agents', 'agents.id', '=', 'users.id_agent')
             ->where('users.rut', '=', $studentInfo)
             ->get();
         return $student;

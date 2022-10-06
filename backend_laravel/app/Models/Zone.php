@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Van extends Model
+class Zone extends Model
 {
     use HasFactory;
 
-    protected $table = 'vans';
+    protected $table = 'zones';
 
     protected $fillable = [
-        'brand',
-        'model',
-        'unique_code',
+        'place',
     ];
 }
