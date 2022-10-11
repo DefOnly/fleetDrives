@@ -178,7 +178,7 @@ const TableDrivers = ({ drivers }) => {
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Correo (Opcional):</FormLabel>
-              <Input placeholder="" />
+              <Input placeholder="ejemplo@gmail.com" />
             </FormControl>
           </ModalBody>
           <ModalFooter>

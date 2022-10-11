@@ -72,9 +72,7 @@ export default function Students(props) {
     setCourse(param);
     setStudents(response.data);
     let result = response.data;
-    result.map((row) => {
-      count++;
-    });
+    result.map((row) => count++);
     setCount(count);
     setIsShown(true);
   };
@@ -84,9 +82,7 @@ export default function Students(props) {
     let count = 0;
     setDrivers(response.data);
     let result = response.data;
-    result.map((row) => {
-      count++;
-    });
+    result.map((row) => count++);
     setCount(count);
     setShow(!show);
   };
@@ -195,18 +191,18 @@ export default function Students(props) {
                   </Select>
                 </FormControl>
                 <ModalHeader>Datos del Apoderado</ModalHeader>
-              <FormControl>
-                <FormLabel>Apoderado</FormLabel>
-                <Input placeholder="Nombre y Apellido" />
-              </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Teléfono</FormLabel>
-                <Input placeholder="+569" />
-              </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Correo (Opcional)</FormLabel>
-                <Input placeholder="ejemplo@gmail.com" />
-              </FormControl>
+                <FormControl>
+                  <FormLabel>Apoderado</FormLabel>
+                  <Input placeholder="Nombre y Apellido" />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Teléfono</FormLabel>
+                  <Input placeholder="+569" />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Correo (Opcional)</FormLabel>
+                  <Input placeholder="ejemplo@gmail.com" />
+                </FormControl>
               </ModalBody>
               <ModalFooter>
                 <Button colorScheme="blue" mr={3}>
@@ -282,6 +278,19 @@ export default function Students(props) {
                     <option value="Séptimo Básico">Séptimo Básico</option>
                     <option value="Octavo Básico">Octavo Básico</option>
                   </Select>
+                </FormControl>
+                <ModalHeader>Datos del Apoderado</ModalHeader>
+                <FormControl>
+                  <FormLabel>Apoderado</FormLabel>
+                  <Input placeholder="Nombre y Apellido" />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Teléfono</FormLabel>
+                  <Input placeholder="+569" />
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Correo (Opcional)</FormLabel>
+                  <Input placeholder="ejemplo@gmail.com" />
                 </FormControl>
               </ModalBody>
               <ModalFooter>
@@ -367,7 +376,6 @@ export default function Students(props) {
             >
               <Button
                 onClick={(event) => showParvulo(event)}
-                width="20%"
                 background="#9AE6B4"
                 color="black"
                 hover="#9ae6b469"

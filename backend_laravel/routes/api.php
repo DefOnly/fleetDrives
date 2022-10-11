@@ -28,4 +28,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('students/{course}',  [UserController::class, 'index']);
     Route::get('drivers',  [UserController::class, 'getAllDrivers']);
     Route::get('studentInfo/{info}',  [UserController::class, 'getStudentInfo']);
+    Route::get('studentUpdate/{idStudent}',  [UserController::class, 'StudentUpdate']);
+    Route::put('updateStudent/{idStudent}',  [UserController::class, 'updateStudent']);
 });

@@ -36,14 +36,16 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('lastNameP');
             $table->string('lastNameM');
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('gender');
-            $table->integer('active')->default(1);
+            $table->integer('status')->default(1); /** 1: Activo, 0: Inactivo **/
             $table->integer('id_profile'); /** id del Perfil del usuario (1. Administrador, 2. Estudiante) **/
             $table->integer('id_level');
-            $table->integer('id_zone');
+            $table->string('zone')->nullable();
+            $table->string('address')->nullable();
+            $table->integer('coordinates')->nullable();
             $table->integer('id_agent');
             $table->integer('id_province');
             $table->foreignId('id_driver')
