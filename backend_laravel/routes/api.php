@@ -26,8 +26,16 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
     Route::get('students/{course}',  [UserController::class, 'index']);
+    Route::get('getAllUsers',  [UserController::class, 'getAllUsers']);
+    Route::get('getStudents',  [UserController::class, 'getAllStudents']);
     Route::get('drivers',  [UserController::class, 'getAllDrivers']);
-    Route::get('studentInfo/{info}',  [UserController::class, 'getStudentInfo']);
+    Route::post('AddStudentParvulo',  [UserController::class, 'AddStudentParvulo']);
+    Route::post('AddStudentBasica',  [UserController::class, 'AddStudentBasica']);
+    Route::post('AddDriver',  [UserController::class, 'AddDriver']);
+    Route::get('studentInfo/{idStudent}',  [UserController::class, 'getStudentInfo']);
     Route::get('studentUpdate/{idStudent}',  [UserController::class, 'StudentUpdate']);
     Route::put('updateStudent/{idStudent}',  [UserController::class, 'updateStudent']);
+    Route::put('changeDriver',  [UserController::class, 'changeDriver']);
+    Route::get('driversCount',  [UserController::class, 'driversCount']);
+    Route::get('getNumberStudents',  [UserController::class, 'getNumberStudents']);
 });

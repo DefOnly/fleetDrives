@@ -1,60 +1,27 @@
-import {
-  Button,
-  useDisclosure,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  ModalFooter,
-  Modal,
-  ModalOverlay,
-} from "@chakra-ui/react";
-import { useRef } from "react";
+import { useToast, Button } from "@chakra-ui/react";
 
 const ToastUpdate = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const initialRef = useRef(null)
-  const finalRef = useRef(null)
-
+  const toast = useToast();
   return (
     <>
-      <Modal
-        initialFocusRef={initialRef}
-        finalFocusRef={finalRef}
-        isOpen={isOpen}
-        onClose={onClose}
+      <Button
+        onClick={() =>
+          toast({
+            title: "Account created.",
+            description: "We've created your account for you.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          })
+        }
+        type="submit"
+        colorScheme="blue"
+        mr={3}
       >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create your account</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>First name</FormLabel>
-              <Input ref={initialRef} placeholder='First name' />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Last name</FormLabel>
-              <Input placeholder='Last name' />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3}>
-              Save
-            </Button>
-            <Button onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        Guardar cambios
+      </Button>
     </>
-  )
+  );
 };
 
 export default ToastUpdate;

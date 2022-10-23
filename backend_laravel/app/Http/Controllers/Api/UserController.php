@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Agent;
 use App\Models\Zone;
 use App\Models\Driver;
+use App\Models\Van;
 
 class UserController extends Controller
 {
@@ -20,70 +21,70 @@ class UserController extends Controller
     {
         $course = $request->route()->parameter('course');
         if ($course == 'Prekinder') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Kinder') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 2)
                 ->get();
             return $students;
         } else if ($course == 'Primero Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 3)
                 ->get();
             return $students;
         } else if ($course == 'Segundo Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 4)
                 ->get();
             return $students;
         } else if ($course == 'Tercero Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 5)
                 ->get();
             return $students;
         } else if ($course == 'Cuarto Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 6)
                 ->get();
             return $students;
         } else if ($course == 'Quinto Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 7)
                 ->get();
             return $students;
         } else if ($course == 'Sexto Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 8)
                 ->get();
             return $students;
         } else if ($course == 'Séptimo Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 9)
                 ->get();
             return $students;
         } else if ($course == 'Octavo Básico') {
-            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
+            $students = User::select('users.id', 'rut', 'name', 'lastNameP', 'lastNameM', 'gender', 'status', 'id_level', 'zone', 'id_driver', 'nameDriver', 'lastNameDP', 'lastNameDM')
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 10)
@@ -92,17 +93,38 @@ class UserController extends Controller
         }
     }
 
+    public function getAllStudents()
+    {
+        $students = User::all();
+        return $students;
+    }
+
     public function getAllDrivers()
     {
-        $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand', 'model', 'unique_code')
-            ->join('vans', 'vans.id', '=', 'drivers.id_car')
+        $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand_model', 'unique_code')
+            ->join('vans', 'vans.id', '=', 'drivers.id_van')
             ->get();
         return $drivers;
     }
 
+    public function getAllUsers()
+    {
+        $users = User::select('rut')
+            ->get()->toArray();
+            $drivers = Driver::select('rutDriver')
+            ->get()->toArray();
+            $response = array_merge($users, $drivers);
+        return $response;
+    }
+
+    public function getNumberStudents(){
+        $count = User::where('users.id_profile', "=", 2)->count();
+        return $count;
+    }
+
     public function getStudentInfo(Request $request)
     {
-        $studentInfo = $request->route()->parameter('info');
+        $idStudent = $request->route()->parameter('idStudent');
         $student = User::select(
             'users.id',
             'rut',
@@ -117,18 +139,94 @@ class UserController extends Controller
             'id_agent',
             'id_province',
             'gender',
-            'email',
-            'id_level',
+            'users.email',
+            'id_driver',
+            'nameDriver',
+            'lastNameDP',
+            'lastNameDM',
             'nameAgent',
             'phone',
             'email_agent'
         )
             ->join('provinces', 'provinces.id', '=', 'users.id_province')
-            // ->join('zones', 'zones.id', '=', 'users.id_zone')
+            ->join('drivers', 'drivers.id', '=', 'users.id_driver')
             ->join('agents', 'agents.id', '=', 'users.id_agent')
-            ->where('users.rut', '=', $studentInfo)
+            ->where('users.id', '=', $idStudent)
             ->get();
         return $student;
+    }
+
+    public function AddStudentParvulo(Request $request)
+    {
+        Agent::insert([
+            'nameAgent' => $request->nameAgent,
+            'phone' => $request->phone,
+            'email_agent' => $request->emailAgent,
+        ]);
+        $idAgent = Agent::select('id')->orderBy('id', 'desc')->take(1)->get();
+        User::insert([
+            'rut' => $request->rut,
+            'name' => $request->name,
+            'lastNameP' => $request->lastNameP,
+            'lastNameM' => $request->lastNameM,
+            'zone' => $request->zone,
+            'address' => $request->address,
+            'id_agent' => $idAgent[0]->id,
+            'id_province' => $request->province,
+            'id_driver' => 6,
+            'gender' => $request->gender,
+            'status' => 1, //Activo
+            'id_profile' => 2,
+            'email' => $request->email,
+            'id_level' => $request->idLevel,
+        ]);
+
+        return true;
+    }
+
+    public function AddStudentBasica(Request $request)
+    {
+        Agent::insert([
+            'nameAgent' => $request->nameAgent,
+            'phone' => $request->phone,
+            'email_agent' => $request->emailAgent,
+        ]);
+        $idAgent = Agent::select('id')->orderBy('id', 'desc')->take(1)->get();
+        User::insert([
+            'rut' => $request->rut,
+            'name' => $request->name,
+            'lastNameP' => $request->lastNameP,
+            'lastNameM' => $request->lastNameM,
+            'zone' => $request->zone,
+            'address' => $request->address,
+            'id_agent' => $idAgent[0]->id,
+            'id_province' => $request->province,
+            'id_driver' => 6,
+            'gender' => $request->gender,
+            'status' => 1, //Activo
+            'id_profile' => 2,
+            'email' => $request->email,
+            'id_level' => $request->idLevel,
+        ]);
+        return true;
+    }
+
+    public function AddDriver(Request $request){
+        Van::insert([
+            'brand_model' => $request->car,
+            'unique_code' => $request->code,
+        ]);
+        $idVan = Van::select('id')->orderBy('id', 'desc')->take(1)->get();
+        Driver::insert([
+            'rutDriver' => $request->rut,
+            'nameDriver' => $request->nameDriver,
+            'lastNameDP' => $request->lastNameD,
+            'lastNameDM' => $request->lastNameM,
+            'enterprise' => $request->enterprise,
+            'email' => $request->email,
+            'id_van' => $idVan[0]->id,
+        ]);
+        return true;
     }
 
     public function updateStudent(Request $request)
@@ -142,6 +240,7 @@ class UserController extends Controller
             'zone' => $request->zone,
             'address' => $request->address,
             'id_province' => $request->province,
+            'id_driver' => $request->idDriver,
             'gender' => $request->gender,
             'email' => $request->email,
             'id_level' => $request->idLevel,
@@ -207,6 +306,20 @@ class UserController extends Controller
             ->where('users.id', $idStudent)
             ->get();
         return $students;
+    }
+
+    public function changeDriver(Request $request)
+    {
+        $idStudent = $request->idStudent;
+        User::where('id', $idStudent)->update([
+            'id_driver' => $request->idDriver,
+        ]);
+    }
+
+    public function driversCount()
+    {
+        $count = Driver::where('drivers.id', "!=", 6)->count();
+        return $count;
     }
 
     /**
