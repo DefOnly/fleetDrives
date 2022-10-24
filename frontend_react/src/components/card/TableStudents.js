@@ -73,11 +73,12 @@ import {
   ArrowLeftIcon,
   ChevronRightIcon,
   ChevronLeftIcon,
+  EmailIcon,
 } from "@chakra-ui/icons";
 import ToastUpdate from "./ToastUpdate";
 import { useEffect } from "react";
 
-const TableStudents = ({ dataStudents, course, columns }) => {
+const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   const textColor = useColorModeValue("gray.700", "white");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
@@ -87,13 +88,13 @@ const TableStudents = ({ dataStudents, course, columns }) => {
   const [studentInfo, setStudentInfo] = useState([]);
   const [studentId, setStudentID] = useState([]);
   const [showStudents, setShowStudents] = useState([]);
-  const [drivers, setDrivers] = useState([]);
+  // const [drivers, setDrivers] = useState([]);
   const [currentDriver, setCurrentDriver] = useState("");
   const [isShown, setIsShown] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [show, setShow] = useState(false);
-  const [modalDriver, setModalDriver] = useState(false);
+  // const [modalDriver, setModalDriver] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   // const { register, handleSubmit, watch, formState: { errors } } = useForm();
   let countStudents = 1;
@@ -110,6 +111,7 @@ const TableStudents = ({ dataStudents, course, columns }) => {
     id_province: "",
     gender: "",
     id_level: "",
+    idDriver: "",
     id_agent: "",
     nameAgent: "",
     phone: "",
@@ -120,14 +122,12 @@ const TableStudents = ({ dataStudents, course, columns }) => {
   const [formErrors, setFormErrors] = useState({});
   const toast = useToast();
   const [state, setState] = useState("");
+  const [phoneError, setPhoneError] = useState(false);
+  const [warningDriver, setWarningDriver] = useState(true);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
-  };
-
-  const handleInputChangeDriver = (e) => {
-    setChangeDriver(e.target.value);
   };
 
   const isErrorRut = formValues.rut === "";
@@ -147,37 +147,37 @@ const TableStudents = ({ dataStudents, course, columns }) => {
     setStudentInfo(response.data);
     setCurrentDriver(response.data[0].id_driver);
     setIsShown(true);
-    setModalDriver(false);
+    // setModalDriver(false);
     setModalDelete(false);
     setFormValues(response.data);
     onOpen();
   };
 
-  const getAllDrivers = async () => {
-    const response =
-      // setStudentID(idStudent);
-      setDrivers(response.data);
-    // setCurrentDriver(idDriver);
-    // setModalDriver(true);
-    // setIsShown(false);
-    // setModalDelete(false);
-    // onOpen();
-  };
+  // const getAllDrivers = async () => {
+  //   const response =
+  //     // setStudentID(idStudent);
+  //     setDrivers(response.data);
+  //   // setCurrentDriver(idDriver);
+  //   // setModalDriver(true);
+  //   // setIsShown(false);
+  //   // setModalDelete(false);
+  //   // onOpen();
+  // };
 
-  useEffect(() => {
-    let isMounted = true;
-    async function getAllDrivers() {
-      const response = await axios.get(`${endPoint}/drivers/`);
-      if (isMounted) {
-        setState(response);
-        setDrivers(response.data);
-      }
-    }
-    getAllDrivers();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   async function getAllDrivers() {
+  //     const response = await axios.get(`${endPoint}/drivers/`);
+  //     if (isMounted) {
+  //       setState(response);
+  //       setDrivers(response.data);
+  //     }
+  //   }
+  //   getAllDrivers();
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   getAllDrivers();
@@ -192,7 +192,7 @@ const TableStudents = ({ dataStudents, course, columns }) => {
     // setCurrentDriver(idDriver);
     setModalDelete(true);
     setIsShown(false);
-    setModalDriver(false);
+    // setModalDriver(false);
     onOpen();
   };
 
@@ -203,7 +203,13 @@ const TableStudents = ({ dataStudents, course, columns }) => {
     for (let [key, value] of formData.entries()) {
       resultArray.push(value);
     }
-    if (
+    let phone = resultArray[14];
+    if (phone.length > 9 || phone.length < 9) {
+      setPhoneError(true);
+      setError(false);
+      setSuccess(false);
+      setShow(true);
+    } else if (
       resultArray[1] !== "" &&
       resultArray[2] !== "" &&
       resultArray[3] !== "" &&
@@ -244,6 +250,7 @@ const TableStudents = ({ dataStudents, course, columns }) => {
     } else {
       setError(true);
       setSuccess(false);
+      setPhoneError(false);
       setShow(true);
     }
   };
@@ -303,12 +310,9 @@ const TableStudents = ({ dataStudents, course, columns }) => {
       }));
       setShowStudents(allNames);
       setSuccess(true);
+      setPhoneError(false);
       setError(false);
       setShow(true);
-      let idLevel = students[0].id_level;
-      // if (idLevel === id_level) {
-      //   setCount(count + 1);
-      // }
       setTimeout(() => {
         onClose();
         setSuccess(false);
@@ -1190,11 +1194,13 @@ const TableStudents = ({ dataStudents, course, columns }) => {
                           </option>
                         ))}
                       </Select>
-                      <Alert status="warning">
-                        <AlertIcon />
-                        El estudiante no tiene conductor asignado, debe
-                        asignarle uno.
-                      </Alert>
+                      {warningDriver && (
+                        <Alert status="warning">
+                          <AlertIcon />
+                          El estudiante no tiene conductor asignado, debe
+                          asignarle uno.
+                        </Alert>
+                      )}
                     </>
                   ) : (
                     <Select
@@ -1354,6 +1360,16 @@ const TableStudents = ({ dataStudents, course, columns }) => {
                   </Box>
                 </SlideFade>
               )}
+              {phoneError && (
+                <SlideFade startingHeight={1} in={show}>
+                  <Box my={4}>
+                    <Alert status="error" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      ¡El formato del teléfono es incorrecto!
+                    </Alert>
+                  </Box>
+                </SlideFade>
+              )}
               {error && (
                 <SlideFade startingHeight={1} in={show}>
                   <Box my={4}>
@@ -1368,67 +1384,6 @@ const TableStudents = ({ dataStudents, course, columns }) => {
                 <Button type="submit" colorScheme="blue" mr={3}>
                   Guardar cambios
                 </Button>
-                <Button onClick={onClose}>Cerrar</Button>
-              </ModalFooter>
-            </ModalContent>
-          </form>
-        </Modal>
-      )}
-      {/* Modal asignar conductor */}
-      {modalDriver && (
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isOpen}
-          onClose={onClose}
-        >
-          <ModalOverlay />
-          <form onSubmit={handleChangeDriver}>
-            <ModalContent>
-              {currentDriver === 6 ? (
-                <ModalHeader>Asignar conductor</ModalHeader>
-              ) : (
-                <ModalHeader>Reasignar conductor</ModalHeader>
-              )}
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <FormControl>
-                  <Input id="id" name="id" type="hidden" value={studentId} />
-                  <Stack spacing={3}>
-                    <Select
-                      id="idDriver"
-                      name="idDriver"
-                      onChange={handleInputChangeDriver}
-                      variant="filled"
-                    >
-                      {drivers.map((driver) =>
-                        currentDriver === driver.id ? (
-                          <option selected key={driver.id} value={driver.id}>
-                            {driver.nameDriver +
-                              " " +
-                              driver.lastNameDP +
-                              " " +
-                              driver.lastNameDM}
-                          </option>
-                        ) : (
-                          <option key={driver.id} value={driver.id}>
-                            {driver.nameDriver +
-                              " " +
-                              driver.lastNameDP +
-                              " " +
-                              driver.lastNameDM}
-                          </option>
-                        )
-                      )}
-                    </Select>
-                  </Stack>
-                </FormControl>
-              </ModalBody>
-              <ModalFooter>
-                <ToastUpdate />
-                {/* <Button type="submit" colorScheme="blue" mr={3}>
-                  Guardar cambios
-                </Button> */}
                 <Button onClick={onClose}>Cerrar</Button>
               </ModalFooter>
             </ModalContent>
@@ -1456,6 +1411,14 @@ const TableStudents = ({ dataStudents, course, columns }) => {
                   Nota: Esta acción borrará todos los registros asociados al
                   estudiante y es irreversible.
                 </strong>
+                <br></br><br></br>
+                Enviar clave vía correo
+                <IconButton
+                  variant="outline"
+                  colorScheme="teal"
+                  aria-label="Send email"
+                  icon={<EmailIcon />}
+                />
               </AlertDialogBody>
               <Center>
                 <HStack>

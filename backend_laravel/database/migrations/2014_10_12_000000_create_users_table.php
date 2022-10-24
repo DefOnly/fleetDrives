@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->integer('statusDriver')->default(1);
             $table->integer('id_car');
             $table->integer('id_service_shipping')->nullable();
             $table->softDeletes();

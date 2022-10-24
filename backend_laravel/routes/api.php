@@ -33,8 +33,10 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('AddStudentBasica',  [UserController::class, 'AddStudentBasica']);
     Route::post('AddDriver',  [UserController::class, 'AddDriver']);
     Route::get('studentInfo/{idStudent}',  [UserController::class, 'getStudentInfo']);
+    Route::get('driverInfo/{idDriver}',  [UserController::class, 'getDriverInfo']);
     Route::get('studentUpdate/{idStudent}',  [UserController::class, 'StudentUpdate']);
     Route::put('updateStudent/{idStudent}',  [UserController::class, 'updateStudent']);
+    Route::put('UpdateInfoDriver/{parameters}',  [UserController::class, 'UpdateInfoDriver']);
     Route::put('changeDriver',  [UserController::class, 'changeDriver']);
     Route::get('driversCount',  [UserController::class, 'driversCount']);
     Route::get('getNumberStudents',  [UserController::class, 'getNumberStudents']);

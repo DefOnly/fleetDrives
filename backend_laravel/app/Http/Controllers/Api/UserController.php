@@ -101,8 +101,9 @@ class UserController extends Controller
 
     public function getAllDrivers()
     {
-        $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand_model', 'unique_code')
+        $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand_model', 'unique_code', 'statusDriver')
             ->join('vans', 'vans.id', '=', 'drivers.id_van')
+            ->where('drivers.id', '!=', 6)
             ->get();
         return $drivers;
     }
@@ -156,6 +157,27 @@ class UserController extends Controller
         return $student;
     }
 
+    public function getDriverInfo(Request $request)
+    {
+        $idDriver = $request->route()->parameter('idDriver');
+        $driver = Driver::select(
+            'drivers.id',
+            'vans.id as van_id',
+            'rutDriver',
+            'nameDriver',
+            'lastNameDP',
+            'lastNameDM',
+            'enterprise',
+            'email',
+            'brand_model',
+            'unique_code'
+        )
+            ->join('vans', 'vans.id', '=', 'drivers.id_van')
+            ->where('drivers.id', '=', $idDriver)
+            ->get();
+        return $driver;
+    }
+
     public function AddStudentParvulo(Request $request)
     {
         Agent::insert([
@@ -179,6 +201,7 @@ class UserController extends Controller
             'id_profile' => 2,
             'email' => $request->email,
             'id_level' => $request->idLevel,
+            'id_driver' => $request->idDriver
         ]);
 
         return true;
@@ -207,6 +230,7 @@ class UserController extends Controller
             'id_profile' => 2,
             'email' => $request->email,
             'id_level' => $request->idLevel,
+            'id_driver' => $request->idDriver
         ]);
         return true;
     }
@@ -220,7 +244,7 @@ class UserController extends Controller
         Driver::insert([
             'rutDriver' => $request->rut,
             'nameDriver' => $request->nameDriver,
-            'lastNameDP' => $request->lastNameD,
+            'lastNameDP' => $request->lastNameP,
             'lastNameDM' => $request->lastNameM,
             'enterprise' => $request->enterprise,
             'email' => $request->email,
@@ -296,6 +320,24 @@ class UserController extends Controller
         // ]);
 
         // return true;
+    }
+
+    public function UpdateInfoDriver(Request $request){
+        $idDriver = $request->route()->parameter('parameters');
+        $ids = explode(",", $idDriver);
+        Van::where('id', $ids[1])->update([
+            'brand_model' => $request->car,
+            'unique_code' => $request->code,
+        ]);
+        Driver::where('id', $ids[0])->update([
+            'rutDriver' => $request->rut,
+            'nameDriver' => $request->nameDriver,
+            'lastNameDP' => $request->lastNameP,
+            'lastNameDM' => $request->lastNameM,
+            'enterprise' => $request->enterprise,
+            'email' => $request->email,
+        ]);
+        return true;
     }
 
     public function StudentUpdate(Request $request)

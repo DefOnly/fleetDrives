@@ -65,11 +65,12 @@ export default function Students(props) {
   const [show, setShow] = useState(false);
   const [parvulo, setParvulo] = useState(false);
   const [basica, setBasica] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   const { rut, updateRut, isValid } = useRut();
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
   const [rutError, setRutError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const [state, setState] = useState("");
   const initialValues = {
     rut: "",
@@ -81,15 +82,21 @@ export default function Students(props) {
     id_province: "",
     gender: "",
     id_level: "",
+    idDriver: "",
     nameAgent: "",
     phone: "",
     email_agent: "",
   };
   const [formValues, setFormValues] = useState(initialValues);
+  const [warningDriver, setWarningDriver] = useState(true);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
+    initialValues.idDriver = e.target.value;
+    initialValues.idDriver !== 0
+      ? setWarningDriver(false)
+      : setWarningDriver(true);
   };
 
   const isErrorName = formValues.name === "";
@@ -101,7 +108,26 @@ export default function Students(props) {
   const isErrorPhone = formValues.phone === "";
   const isErrorEmailAgent = formValues.email_agent === "";
 
-  const getAllStudents = async (event, param) => {
+  useEffect(() => {
+    let isMounted = true;
+    let count = 0;
+    async function getAllDrivers() {
+      const response = await axios.get(`${endPoint}/drivers/`);
+      if (isMounted) {
+        setState(response);
+        let result = (response.data);
+        setDrivers(response.data);
+        result.map((row) => count++);
+        setCountDriver(count);
+      }
+    }
+    getAllDrivers();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const getAllStudents = async (param) => {
     const response = await axios.get(`${endPoint}/students/${param}/`);
     let countStudents = 0;
     setCourse(param);
@@ -174,7 +200,7 @@ export default function Students(props) {
 
   const dataStudents = useMemo(() => [...students], [students]);
 
-  const getAllDrivers = async (event) => {
+  const getListDrivers = async (event) => {
     const response = await axios.get(`${endPoint}/drivers/`);
     let count = 0;
     setDrivers(response.data);
@@ -206,8 +232,16 @@ export default function Students(props) {
     let rut = resultArray[0];
     let id_level = parseInt(resultArray[9]);
     let duplicateRut = checkDuplicateRut(users, rut);
+    let phone = resultArray[12];
     if (duplicateRut.length > 0) {
       setRutError(true);
+      setSuccess(false);
+      setError(false);
+      setPhoneError(false);
+      setShow(true);
+    } else if (phone.length > 9 || phone.length < 9) {
+      setPhoneError(true);
+      setRutError(false);
       setSuccess(false);
       setError(false);
       setShow(true);
@@ -218,13 +252,15 @@ export default function Students(props) {
       resultArray[3] === "" ||
       resultArray[4] === "" ||
       resultArray[5] === "" ||
-      resultArray[10] === "" ||
+      resultArray[10] === "0" ||
       resultArray[11] === "" ||
-      resultArray[12] === ""
+      resultArray[12] === "" ||
+      resultArray[13] === ""
     ) {
       setError(true);
       setSuccess(false);
       setRutError(false);
+      setPhoneError(false);
       setShow(true);
     } else {
       if (course === "Prekinder" || course === "Kinder") {
@@ -239,9 +275,10 @@ export default function Students(props) {
           gender: resultArray[7],
           email: resultArray[8],
           idLevel: parseInt(resultArray[9]),
-          nameAgent: resultArray[10],
-          phone: resultArray[11],
-          emailAgent: resultArray[12],
+          idDriver: parseInt(resultArray[10]),
+          nameAgent: resultArray[11],
+          phone: resultArray[12],
+          emailAgent: resultArray[13],
         });
       } else {
         await axios.post(`${endPoint}/AddStudentBasica/`, {
@@ -255,12 +292,14 @@ export default function Students(props) {
           gender: resultArray[7],
           email: resultArray[8],
           idLevel: parseInt(resultArray[9]),
-          nameAgent: resultArray[10],
-          phone: resultArray[11],
-          emailAgent: resultArray[12],
+          idDriver: parseInt(resultArray[10]),
+          nameAgent: resultArray[11],
+          phone: resultArray[12],
+          emailAgent: resultArray[13],
         });
-        UpdateStateStudents(id_level);
       }
+      getAllStudents(course);
+      UpdateStateStudents(id_level);
     }
   };
 
@@ -273,9 +312,9 @@ export default function Students(props) {
 
   const UpdateStateStudents = useCallback(
     (id_level) => {
-      setStudents(dataStudents);
       setSuccess(true);
       setRutError(false);
+      setPhoneError(false);
       setError(false);
       setShow(true);
       let idLevel = students[0].id_level;
@@ -301,7 +340,7 @@ export default function Students(props) {
         });
       }, "2000");
     },
-    [students, dataStudents, updateRut, count, onClose]
+    [students, updateRut, count, onClose]
   );
 
   // useEffect(() => {
@@ -614,6 +653,49 @@ export default function Students(props) {
                       <option value="2">Kinder</option>
                     </Select>
                   </FormControl>
+                  <FormControl mt={4}>
+                    <FormLabel>Asignar Conductor</FormLabel>
+                    <Icon
+                      as={FaAsterisk}
+                      color="red"
+                      w="0.7rem"
+                      h="0.7rem"
+                      pos="relative"
+                      bottom="2rem"
+                      left="8.5rem"
+                    />
+                    <Select
+                      id="idDriver"
+                      name="idDriver"
+                      onChange={(e) => handleInputChange(e)}
+                      variant="filled"
+                    >
+                      <option selected value={0}>
+                        Seleccione un conductor
+                      </option>
+                      {drivers.map((driver) => (
+                        <option
+                          onClick={onToggle}
+                          key={driver.id}
+                          value={driver.id}
+                        >
+                          {driver.nameDriver +
+                            " " +
+                            driver.lastNameDP +
+                            " " +
+                            driver.lastNameDM}
+                        </option>
+                      ))}
+                    </Select>
+                    {warningDriver && (
+                      <Collapse in={isOpen} animateOpacity>
+                        <Alert status="warning">
+                          <AlertIcon />
+                          Debe seleccionar un conductor al estudiante.
+                        </Alert>
+                      </Collapse>
+                    )}
+                  </FormControl>
                   <ModalHeader>Datos del Apoderado</ModalHeader>
                   <FormControl isInvalid={isErrorNameAgent}>
                     <FormLabel>Apoderado</FormLabel>
@@ -690,6 +772,16 @@ export default function Students(props) {
                       </FormErrorMessage>
                     )}
                   </FormControl>
+                  {phoneError && (
+                    <SlideFade startingHeight={1} in={show}>
+                      <Box my={4}>
+                        <Alert status="error" variant="solid" borderRadius={4}>
+                          <AlertIcon />
+                          ¡El formato del teléfono es incorrecto!
+                        </Alert>
+                      </Box>
+                    </SlideFade>
+                  )}
                   <FormControl mt={4} isInvalid={isErrorEmailAgent}>
                     <FormLabel>Correo</FormLabel>
                     <Input
@@ -1057,6 +1149,49 @@ export default function Students(props) {
                       <option value="10">Octavo Básico</option>
                     </Select>
                   </FormControl>
+                  <FormControl mt={4}>
+                    <FormLabel>Asignar Conductor</FormLabel>
+                    <Icon
+                      as={FaAsterisk}
+                      color="red"
+                      w="0.7rem"
+                      h="0.7rem"
+                      pos="relative"
+                      bottom="2rem"
+                      left="8.5rem"
+                    />
+                    <Select
+                      id="idDriver"
+                      name="idDriver"
+                      onChange={(e) => handleInputChange(e)}
+                      variant="filled"
+                    >
+                      <option selected value={0}>
+                        Seleccione un conductor
+                      </option>
+                      {drivers.map((driver) => (
+                        <option
+                          onClick={onToggle}
+                          key={driver.id}
+                          value={driver.id}
+                        >
+                          {driver.nameDriver +
+                            " " +
+                            driver.lastNameDP +
+                            " " +
+                            driver.lastNameDM}
+                        </option>
+                      ))}
+                    </Select>
+                    {warningDriver && (
+                      <Collapse in={isOpen} animateOpacity>
+                        <Alert status="warning">
+                          <AlertIcon />
+                          Debe seleccionar un conductor al estudiante.
+                        </Alert>
+                      </Collapse>
+                    )}
+                  </FormControl>
                   <ModalHeader>Datos del Apoderado</ModalHeader>
                   <FormControl isInvalid={isErrorNameAgent}>
                     <FormLabel>Apoderado</FormLabel>
@@ -1133,6 +1268,16 @@ export default function Students(props) {
                       </FormErrorMessage>
                     )}
                   </FormControl>
+                  {phoneError && (
+                    <SlideFade startingHeight={1} in={show}>
+                      <Box my={4}>
+                        <Alert status="error" variant="solid" borderRadius={4}>
+                          <AlertIcon />
+                          ¡El formato del teléfono es incorrecto!
+                        </Alert>
+                      </Box>
+                    </SlideFade>
+                  )}
                   <FormControl mt={4} isInvalid={isErrorEmailAgent}>
                     <FormLabel>Correo</FormLabel>
                     <Input
@@ -1200,6 +1345,7 @@ export default function Students(props) {
                     </Box>
                   </SlideFade>
                 )}
+
                 <ModalFooter>
                   <Button type="submit" colorScheme="blue" mr={3}>
                     Agregar
@@ -1210,7 +1356,6 @@ export default function Students(props) {
             </form>
           </Modal>
         )}
-
         {props.name === "PÁRVULO" && (
           <Flex flexDirection="column" justify="space-between" h="100%">
             <Flex
@@ -1314,14 +1459,10 @@ export default function Students(props) {
                   Ver estudiantes
                 </MenuButton>
                 <MenuList>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Prekinder")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Prekinder")}>
                     Prekinder
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Kinder")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Kinder")}>
                     Kinder
                   </MenuItem>
                 </MenuList>
@@ -1347,6 +1488,7 @@ export default function Students(props) {
               <TableStudents
                 course={course}
                 dataStudents={dataStudents}
+                drivers={drivers}
                 columns={columns}
               />
             )}
@@ -1466,44 +1608,28 @@ export default function Students(props) {
                   Ver estudiantes
                 </MenuButton>
                 <MenuList>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Primero Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Primero Básico")}>
                     Primero Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Segundo Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Segundo Básico")}>
                     Segundo Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Tercero Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Tercero Básico")}>
                     Tercero Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Cuarto Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Cuarto Básico")}>
                     Cuarto Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Quinto Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Quinto Básico")}>
                     Quinto Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Sexto Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Sexto Básico")}>
                     Sexto Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Séptimo Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Séptimo Básico")}>
                     Séptimo Básico
                   </MenuItem>
-                  <MenuItem
-                    onClick={(event) => getAllStudents(event, "Octavo Básico")}
-                  >
+                  <MenuItem onClick={() => getAllStudents("Octavo Básico")}>
                     Octavo Básico
                   </MenuItem>
                 </MenuList>
@@ -1517,6 +1643,7 @@ export default function Students(props) {
               <TableStudents
                 course={course}
                 dataStudents={dataStudents}
+                drivers={drivers}
                 columns={columns}
               />
             )}
@@ -1607,7 +1734,7 @@ export default function Students(props) {
                 }}
               > */}
               <Button
-                onClick={(event) => getAllDrivers(event)}
+                onClick={(event) => getListDrivers(event)}
                 variant="darkBrand"
                 color="white"
                 fontSize="sm"
@@ -1623,7 +1750,7 @@ export default function Students(props) {
             </Flex>
             {
               <Collapse startingHeight={1} in={show}>
-                <TableDrivers drivers={drivers} />
+                <TableDrivers drivers={drivers} countDriver={countDriver} />
               </Collapse>
             }
           </Flex>
