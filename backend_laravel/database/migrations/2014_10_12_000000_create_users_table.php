@@ -24,8 +24,8 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->integer('statusDriver')->default(1);
-            $table->integer('id_car');
-            $table->integer('id_service_shipping')->nullable();
+            $table->integer('id_van');
+            // $table->integer('id_service_shipping')->nullable();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
@@ -33,7 +33,7 @@ class CreateUsersTable extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('rut')->nullable();
+            $table->string('rut')->unique()->nullable();
             $table->string('name');
             $table->string('lastNameP');
             $table->string('lastNameM');

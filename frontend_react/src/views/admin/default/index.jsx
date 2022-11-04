@@ -30,6 +30,7 @@ import {
   Select,
   SimpleGrid,
   useColorModeValue,
+  Spinner,
 } from "@chakra-ui/react";
 // Assets
 import Usa from "assets/img/dashboards/usa.png";
@@ -68,17 +69,32 @@ export default function UserReports() {
   const [state, setState] = useState("");
   const [numberStudents, setNumberStudents] = useState("");
   const [numberDrivers, setNumberDrivers] = useState("");
+  const [travelsPending, setTravelsPending] = useState("");
+  const [travelsComplete, setTravelsComplete] = useState("");
+  const [loading, setLoading] = useState(true);
   const endPoint = "http://localhost:8000/api";
-  
+
   useEffect(() => {
     let isMounted = true;
     async function getAllStudents() {
-      const responseStudents = await axios.get(`${endPoint}/getNumberStudents/`);
+      const responseStudents = await axios.get(
+        `${endPoint}/getNumberStudents/`
+      );
       const responseDrivers = await axios.get(`${endPoint}/driversCount/`);
+      const responseTravelsPending = await axios.get(
+        `${endPoint}/driversTravelsCountPending/`
+      );
+      const responseTravelsComplete = await axios.get(
+        `${endPoint}/driversTravelsCountComplete/`
+      );
       if (isMounted) {
+        setLoading(true);
         setState(responseStudents);
         setNumberStudents(responseStudents.data);
         setNumberDrivers(responseDrivers.data);
+        setTravelsPending(responseTravelsPending.data);
+        setTravelsComplete(responseTravelsComplete.data);
+        setLoading(false);
       }
     }
     getAllStudents();
@@ -86,42 +102,56 @@ export default function UserReports() {
       isMounted = false;
     };
   }, []);
- 
+
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 3, "2xl": 6 }}
-        gap='20px'
-        mb='20px'>
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={
-                <Icon w='32px' h='32px' as={FaRoute} color={brandColor} />
-              }
-            />
-          }
-          name='Viajes pendientes'
-          value='$350.4'
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={
-                <Icon w='32px' h='32px' as={FaRoute} color={brandColor} />
-              }
-            />
-          }
-          name='Viajes completados'
-          value='$642.39'
-        />
-        <MiniStatistics growth='+23%' name='Contratos Activos' value='$574.34' />
+        gap="20px"
+        mb="20px"
+      >
+        {loading && <Spinner position="relative" left="45rem" size="xl" />}
+        {!loading && (
+          <MiniStatistics
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={boxBg}
+                icon={
+                  <Icon w="32px" h="32px" as={FaRoute} color={brandColor} />
+                }
+              />
+            }
+            name="Viajes pendientes"
+            value={travelsPending}
+          />
+        )}
+
+        {!loading && (
+          <MiniStatistics
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={boxBg}
+                icon={
+                  <Icon w="32px" h="32px" as={FaRoute} color={brandColor} />
+                }
+              />
+            }
+            name="Viajes completados"
+            value={travelsComplete}
+          />
+        )}
+        {!loading && (
+          <MiniStatistics
+            growth={parseInt(100 / numberDrivers) + " %"}
+            name="Contratos Activos"
+            value={numberDrivers}
+          />
+        )}
+
         {/* <MiniStatistics
           endContent={
             <Flex me='-16px' mt='10px'>
@@ -143,42 +173,48 @@ export default function UserReports() {
           name='Reportes'
           value='$1,000'
         /> */}
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg='linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)'
-              icon={<Icon w='28px' h='28px' as={MdAddTask} color='white' />}
-            />
-          }
-          name='Conductores Certificados'
-          value={numberDrivers}
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={
-                <Icon w='32px' h='32px' as={MdFileCopy} color={brandColor} />
-              }
-            />
-          }
-          name='Total Estudiantes'
-          value={numberStudents}
-        />
+
+        {!loading && (
+          <MiniStatistics
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                bg="linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)"
+                icon={<Icon w="28px" h="28px" as={MdAddTask} color="white" />}
+              />
+            }
+            name="Conductores Certificados"
+            value={numberDrivers}
+          />
+        )}
+
+        {!loading && (
+          <MiniStatistics
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={boxBg}
+                icon={
+                  <Icon w="32px" h="32px" as={MdFileCopy} color={brandColor} />
+                }
+              />
+            }
+            name="Total Estudiantes"
+            value={numberStudents}
+          />
+        )}
       </SimpleGrid>
 
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
         <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
         />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
           <Tasks />
-          <MiniCalendar h='100%' minW='100%' selectRange={false} />
+          <MiniCalendar h="100%" minW="100%" selectRange={false} />
         </SimpleGrid>
       </SimpleGrid>
 
@@ -193,7 +229,6 @@ export default function UserReports() {
           <PieCard />
         </SimpleGrid>
       </SimpleGrid> */}
-      
     </Box>
   );
 }

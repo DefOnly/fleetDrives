@@ -15,8 +15,7 @@ class CreateVansTable extends Migration
     {
         Schema::create('vans', function (Blueprint $table) {
             $table->id();
-            $table->string('brand');
-            $table->string('model');
+            $table->string('brand_model');
             $table->string('unique_code'); //Patente
             $table->timestamps();
         });

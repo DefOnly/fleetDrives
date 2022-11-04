@@ -866,6 +866,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
               })}
         </Tbody>
       </Table>
+      {/* Editar Conductor */}
       {modalUpdateDriver && (
         <Modal
           initialFocusRef={initialRef}
@@ -921,7 +922,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                   fontWeight="2000"
                   color="green"
                 />
-                <FormControl mt={4} isInvalid={isErrorName_update}>
+                <FormControl mt={4} isValid={!isErrorName_update}>
                   <FormLabel>Nombres y Apellidos</FormLabel>
                   <Input
                     type="text"
@@ -937,10 +938,10 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     w="0.7rem"
                     h="0.7rem"
                     pos="absolute"
-                    bottom="5.1rem"
+                    bottom="5.2rem"
                     left="9.3rem"
                   />
-                  {!isErrorName_update ? (
+                  {isErrorName_update ? (
                     <Icon
                       ml="23rem"
                       pos="relative"
@@ -957,7 +958,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <FormControl mt={4} isInvalid={isErrorEnterprise_update}>
+                <FormControl mt={4} isInvalid={!isErrorEnterprise_update}>
                   <FormLabel>Empresa de Contrato</FormLabel>
                   <Input
                     type="text"
@@ -976,7 +977,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     bottom="5.1rem"
                     left="9.7rem"
                   />
-                  {!isErrorEnterprise_update ? (
+                  {isErrorEnterprise_update ? (
                     <Icon
                       ml="23rem"
                       pos="relative"
@@ -993,7 +994,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <FormControl mt={4} isInvalid={isErrorCar_update}>
+                <FormControl mt={4} isInvalid={!isErrorCar_update}>
                   <FormLabel>Marca y Modelo de Auto</FormLabel>
                   <Input
                     type="text"
@@ -1009,10 +1010,10 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     w="0.7rem"
                     h="0.7rem"
                     pos="absolute"
-                    bottom="5rem"
+                    bottom="5.2rem"
                     left="11rem"
                   />
-                  {!isErrorCar_update ? (
+                  {isErrorCar_update ? (
                     <Icon
                       ml="23rem"
                       pos="relative"
@@ -1029,7 +1030,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <FormControl mt={4} isInvalid={isErrorCode_update}>
+                <FormControl mt={4} isInvalid={!isErrorCode_update}>
                   <FormLabel>Número de Patente</FormLabel>
                   <Input
                     type="text"
@@ -1048,7 +1049,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     bottom="5.2rem"
                     left="8.8rem"
                   />
-                  {!isErrorCode_update ? (
+                  {isErrorCode_update ? (
                     <Icon
                       ml="23rem"
                       pos="relative"

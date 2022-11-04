@@ -22,7 +22,7 @@
 
 // Chakra imports
 import { Box, SimpleGrid } from "@chakra-ui/react";
-import DevelopmentTable from "views/admin/dataTables/components/DevelopmentTable";
+import TravelPlanning from "views/admin/dataTables/components/TravelPlanning";
 import CheckTable from "views/admin/dataTables/components/CheckTable";
 import ColumnsTable from "views/admin/dataTables/components/ColumnsTable";
 import ComplexTable from "views/admin/dataTables/components/ComplexTable";
@@ -44,21 +44,21 @@ export default function Settings() {
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <SimpleGrid
         mb='20px'
-        columns={{ sm: 1, md: 2 }}
+        columns={{ sm: 1, md: 1 }}
         spacing={{ base: "20px", xl: "20px" }}>
-        <DevelopmentTable
+        <TravelPlanning
           columnsData={columnsDataDevelopment}
           tableData={tableDataDevelopment}
         />
-        <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
-        <ColumnsTable
+        {/* <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} /> */}
+        {/* <ColumnsTable
           columnsData={columnsDataColumns}
           tableData={tableDataColumns}
-        />
-        <ComplexTable
+        /> */}
+        {/* <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
-        />
+        /> */}
       </SimpleGrid>
     </Box>
   );

@@ -18,6 +18,7 @@ class CreateAgentsTable extends Migration
             $table->string('nameAgent');
             $table->string('phone');
             $table->string('email_agent')->nullable();
+            $table->integer('id_notification');
             $table->timestamps();
         });
     }

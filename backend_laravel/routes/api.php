@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TravelController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'api'], function () {
+    // Módulo de gestión de usuarios
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
@@ -40,4 +42,12 @@ Route::group(['middleware' => 'api'], function () {
     Route::put('changeDriver',  [UserController::class, 'changeDriver']);
     Route::get('driversCount',  [UserController::class, 'driversCount']);
     Route::get('getNumberStudents',  [UserController::class, 'getNumberStudents']);
+    Route::get('driverStudent/{idDriver}',  [UserController::class, 'driverStudent']);
+    // Módulo de planificación de viajes
+    Route::post('AddDateTimeTravel',  [TravelController::class, 'AddDateTimeTravel']);
+    Route::post('AddDateTravel',  [TravelController::class, 'AddDateTravel']);
+    Route::delete('deleteTravel/{idTravel}',  [TravelController::class, 'deleteTravel']);
+    Route::get('driverTravel',  [TravelController::class, 'driverTravel']);
+    Route::get('driversTravelsCountPending',  [TravelController::class, 'driversTravelsCountPending']);
+    Route::get('driversTravelsCountComplete',  [TravelController::class, 'driversTravelsCountComplete']);
 });

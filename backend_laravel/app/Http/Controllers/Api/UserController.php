@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Agent;
-use App\Models\Zone;
 use App\Models\Driver;
 use App\Models\Van;
 
@@ -112,13 +111,14 @@ class UserController extends Controller
     {
         $users = User::select('rut')
             ->get()->toArray();
-            $drivers = Driver::select('rutDriver')
+        $drivers = Driver::select('rutDriver')
             ->get()->toArray();
-            $response = array_merge($users, $drivers);
+        $response = array_merge($users, $drivers);
         return $response;
     }
 
-    public function getNumberStudents(){
+    public function getNumberStudents()
+    {
         $count = User::where('users.id_profile', "=", 2)->count();
         return $count;
     }
@@ -178,6 +178,23 @@ class UserController extends Controller
         return $driver;
     }
 
+    public function driverStudent(Request $request)
+    {
+        $idDriver = $request->route()->parameter('idDriver');
+        $driver_student = User::select('users.id', 'name', 'lastNameP', 'lastNameM')
+            // ->join('drivers', 'drivers.id', '=', 'users.id_driver')
+            ->where('users.id_driver', '=', $idDriver)
+            ->where('users.id_profile', '=', 2)
+            ->get();
+        $objArray = json_decode($driver_student);
+        $newArray = array();
+        foreach ($objArray as $value) {
+            $value->idDriver = (int) $idDriver;
+            $newArray[] = $value;
+        }
+        return $newArray;
+    }
+
     public function AddStudentParvulo(Request $request)
     {
         Agent::insert([
@@ -235,7 +252,8 @@ class UserController extends Controller
         return true;
     }
 
-    public function AddDriver(Request $request){
+    public function AddDriver(Request $request)
+    {
         Van::insert([
             'brand_model' => $request->car,
             'unique_code' => $request->code,
@@ -248,6 +266,7 @@ class UserController extends Controller
             'lastNameDM' => $request->lastNameM,
             'enterprise' => $request->enterprise,
             'email' => $request->email,
+            'password' => $request->rut,
             'id_van' => $idVan[0]->id,
         ]);
         return true;
@@ -322,7 +341,8 @@ class UserController extends Controller
         // return true;
     }
 
-    public function UpdateInfoDriver(Request $request){
+    public function UpdateInfoDriver(Request $request)
+    {
         $idDriver = $request->route()->parameter('parameters');
         $ids = explode(",", $idDriver);
         Van::where('id', $ids[1])->update([
