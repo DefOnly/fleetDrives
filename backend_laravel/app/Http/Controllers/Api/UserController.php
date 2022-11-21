@@ -181,8 +181,8 @@ class UserController extends Controller
     public function driverStudent(Request $request)
     {
         $idDriver = $request->route()->parameter('idDriver');
-        $driver_student = User::select('users.id', 'name', 'lastNameP', 'lastNameM')
-            // ->join('drivers', 'drivers.id', '=', 'users.id_driver')
+        $driver_student = User::select('users.id', 'name', 'lastNameP', 'lastNameM', 'levels.nameLevel')
+            ->join('levels', 'levels.id', '=', 'users.id_level')
             ->where('users.id_driver', '=', $idDriver)
             ->where('users.id_profile', '=', 2)
             ->get();
@@ -288,19 +288,6 @@ class UserController extends Controller
             'email' => $request->email,
             'id_level' => $request->idLevel,
         ]);
-        // $student = User::findOrFail($idStudent);
-        // $student->rut = $request->rut;
-        // $student->name = $request->name;
-        // $student->lastNameP = $request->lastNameP;
-        // $student->lastNameM = $request->lastNameM;
-        // $student->zone = $request->zone;
-        // $student->address = $request->address;
-        // $student->id_province = $request->province;
-        // $student->gender = $request->gender;
-        // $student->email = $request->email;
-        // $student->id_level = $request->idLevel;
-
-        // $student->save();
 
         $idAgent = $request->idAgent;
         Agent::where('id', $idAgent)->update([
@@ -315,42 +302,18 @@ class UserController extends Controller
             ->get();
 
         return $student;
-
-        // print($dataUpdate);
-        // $data = explode(",", $dataUpdate);
-
-        // Agent::where('id', $data[11])->update([
-        //     'nameAgent' => $data[12],
-        //     'phone' => $data[13],
-        //     'email_agent' => $data[14],
-        // ]);
-
-        // User::where('id', $data[0])->update([
-        //     'rut' => $data[1],
-        //     'name' => $data[2],
-        //     'lastNameP' => $data[3],
-        //     'lastNameM' => $data[4],
-        //     'zone' => $data[5],
-        //     'address' => $data[6],
-        //     'id_province' => $data[7],
-        //     'gender' => $data[8],
-        //     'email' => $data[9],
-        //     'id_level' => $data[10],
-        // ]);
-
-        // return true;
     }
 
     public function UpdateInfoDriver(Request $request)
     {
         $idDriver = $request->route()->parameter('parameters');
-        $ids = explode(",", $idDriver);
-        Van::where('id', $ids[1])->update([
+        $id = explode(",", $idDriver);
+        Van::where('id', $id[1])->update([
             'brand_model' => $request->car,
             'unique_code' => $request->code,
         ]);
-        Driver::where('id', $ids[0])->update([
-            'rutDriver' => $request->rut,
+        Driver::where('id', $id[0])->update([
+            'rutDriver' => $request->rutDriver,
             'nameDriver' => $request->nameDriver,
             'lastNameDP' => $request->lastNameP,
             'lastNameDM' => $request->lastNameM,

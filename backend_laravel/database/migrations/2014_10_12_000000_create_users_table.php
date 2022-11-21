@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->integer('statusDriver')->default(1);
             $table->integer('id_van');
+            $table->integer('id_college');
             // $table->integer('id_service_shipping')->nullable();
             $table->softDeletes();
             $table->rememberToken();

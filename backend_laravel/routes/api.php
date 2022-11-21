@@ -50,4 +50,5 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('driverTravel',  [TravelController::class, 'driverTravel']);
     Route::get('driversTravelsCountPending',  [TravelController::class, 'driversTravelsCountPending']);
     Route::get('driversTravelsCountComplete',  [TravelController::class, 'driversTravelsCountComplete']);
+    Route::get('showInfoTravel/{idTravel}',  [TravelController::class, 'showInfoTravel']);
 });

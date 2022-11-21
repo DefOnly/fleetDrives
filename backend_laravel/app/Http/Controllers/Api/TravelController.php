@@ -30,6 +30,12 @@ class TravelController extends Controller
         return $count;
     }
 
+    public function showInfoTravel(Request $request){
+        $id_travel = $request->route()->parameter('idTravel');
+        $showInfoTravel = Travel::select('*')->where('id', $id_travel)->get();
+        return $showInfoTravel;
+    }
+
     public function AddDateTimeTravel(Request $request)
     {
         Travel::insert([
