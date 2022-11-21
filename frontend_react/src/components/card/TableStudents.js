@@ -75,8 +75,6 @@ import {
   ChevronLeftIcon,
   EmailIcon,
 } from "@chakra-ui/icons";
-import ToastUpdate from "./ToastUpdate";
-import { useEffect } from "react";
 
 const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   const textColor = useColorModeValue("gray.700", "white");

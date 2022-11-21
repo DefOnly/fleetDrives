@@ -5,12 +5,12 @@ import { useHistory } from "react-router-dom";
 export default function AuthUser(){
     const history = useHistory();
     const getToken = () => {
-        const tokenString = sessionStorage.getItem('token');
+        const tokenString = localStorage.getItem('token');
         const userToken = JSON.parse(tokenString);
         return userToken;
     }
     const getUser = () => {
-        const userString = sessionStorage.getItem('user');
+        const userString = localStorage.getItem('user');
         const userDetail = JSON.parse(userString);
         return userDetail;
     }
@@ -18,15 +18,15 @@ export default function AuthUser(){
     const [user, setUser] = useState(getUser());
 
     const saveToken = (user, token) => {
-        sessionStorage.setItem('token', JSON.stringify(token));
-        sessionStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', JSON.stringify(token));
+        localStorage.setItem('user', JSON.stringify(user));
         setToken(token);
         setUser(user);
         history.push("/admin");
     }
 
     const logout = () => {
-      sessionStorage.clear();
+      localStorage.clear();
       history.push("/auth");
     }
 

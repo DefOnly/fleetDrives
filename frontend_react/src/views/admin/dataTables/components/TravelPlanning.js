@@ -52,6 +52,16 @@ import {
   ButtonGroup,
   Tooltip,
   Skeleton,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  List,
+  ListItem,
+  ListIcon,
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/card/Card";
@@ -72,10 +82,12 @@ import {
   MdChevronRight,
   MdBusAlert,
   MdOutlineNoTransfer,
+  MdCheckCircle,
 } from "react-icons/md";
 import { FaRoute } from "react-icons/fa";
 import TimePicker from "react-time-picker";
 import axios from "axios";
+import { MinusIcon } from '@chakra-ui/icons'
 
 export default function TravelPlanning(props) {
   const { columnsData, tableData } = props;
@@ -93,14 +105,15 @@ export default function TravelPlanning(props) {
   const [idDriver, setIdDriver] = useState([]);
   const [driverTravel, setDriverTravel] = useState([]);
   const [showStudents, setShowStudents] = useState(false);
+  const [showTravel, setShowTravel] = useState(["undefined"]);
   const [scrollBehavior, setScrollBehavior] = React.useState("inside");
   const { selectRange, ...rest } = props;
   const [dateState, setDateState] = useState(new Date());
   const [valueRadio, setValueRadio] = useState("1");
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
-  const [dateTomorrow, setDateTomorrow] = useState(tomorrow);
   const [timeValue, setTimeValue] = useState("12:00");
+  const [dateFormat, setDateFormat] = useState("");
   const sizes = ["xl"];
+  const sizesModalRight = ["md"];
   const [backgroundColor, setBackgroundColor] = useState("#ee5d5078");
   // const [cursor, setCursor] = useState("not-allowed");
   const [showError, setShowError] = useState(false);
@@ -108,6 +121,8 @@ export default function TravelPlanning(props) {
   const [buttonCancel, setButtonCancel] = useState(true);
   const [alertDriver, setAlertDriver] = useState(false);
   const [alertDriverSuccess, setAlertDriverSuccess] = useState(false);
+  const [students, setStudents] = useState(false);
+  const [modalTravel, setModalTravel] = useState(false);
   const initialFocusRef = useRef();
 
   const handleSizeClick = async (newSize, id_driver) => {
@@ -121,6 +136,8 @@ export default function TravelPlanning(props) {
       }, "4000");
     } else {
       setIdDriver(response.data[0].idDriver);
+      setModalTravel(true);
+      setStudents(false);
       onOpen();
     }
   };
@@ -197,16 +214,19 @@ export default function TravelPlanning(props) {
         getDriverTravel();
       }
     }
-    // const showUpdateStudents = await axios.get(
-    //   `${endPoint}/students/${course}/`
-    // );
-    // let students = showUpdateStudents.data;
-    // UpdateStateStudents(students, id_level);
   };
 
   const getIdStudents = (driverStudent) => {
     const studentsIds = driverStudent.map((idStudent) => idStudent.id);
     return studentsIds;
+  };
+
+  const showInfoTravel = async (idTravel) => {
+    const response = await axios.get(`${endPoint}/showInfoTravel/${idTravel}/`);
+    setShowTravel(response.data);
+    let date = response.data[0].date_travel;
+    let dateFormat = date.split("-").reverse().join("/");
+    setDateFormat(dateFormat);
   };
 
   const cancelTravel = async (idTravel) => {
@@ -232,23 +252,13 @@ export default function TravelPlanning(props) {
     setDriverTravel(response);
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const getAllDrivers = async () => {
-      setLoading(true);
-      try {
-        const { data: response } = await axios.get(`${endPoint}/drivers/`);
-        if (isMounted) setDrivers(response);
-      } catch (error) {
-        console.error(error.message);
-      }
-      setLoading(false);
-    };
-    getAllDrivers();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const handleSizeModalRight = async (idDriver) => {
+    const response = await axios.get(`${endPoint}/driverStudent/${idDriver}`);
+    setDriverStudent(response.data);
+    setStudents(true);
+    setModalTravel(false);
+    onOpen();
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -259,6 +269,7 @@ export default function TravelPlanning(props) {
       } catch (error) {
         console.error(error.message);
       }
+      setLoading(false);
     };
     getDriverTravel();
     return () => {
@@ -297,15 +308,70 @@ export default function TravelPlanning(props) {
       px="0px"
       overflowX={{ sm: "scroll", lg: "hidden" }}
     >
-      <Flex px="25px" justify="space-between" mb="20px" align="center">
+      <Flex
+        px="25px"
+        justify="space-between"
+        mt="-3rem"
+        mb="20px"
+        align="center"
+      >
         <Text
           color={textColor}
-          fontSize="22px"
+          fontSize="30px"
           fontWeight="700"
           lineHeight="100%"
         >
           Registrar Viajes
         </Text>
+        <ScaleFade initialScale={2} in={alertDriver}>
+          <Alert
+            zIndex="1"
+            boxShadow="0 5px 20px rgb(0 0 0 / 0.7);"
+            width="xl"
+            position="relative"
+            left="15rem"
+            top="20rem"
+            borderRadius="15px"
+            status="warning"
+            variant="subtle"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            height="140px"
+          >
+            <AlertIcon boxSize="40px" mr={0} />
+            <AlertTitle mt={4} mb={1} fontSize="lg">
+              ¡Importante!
+            </AlertTitle>
+            <AlertDescription maxWidth="sm">
+              El conductor no tiene estudiantes asignados.
+            </AlertDescription>
+          </Alert>
+        </ScaleFade>
+        <ScaleFade initialScale={2} in={alertDriverSuccess}>
+          <Alert
+            zIndex="1"
+            boxShadow="0 5px 20px rgb(0 0 0 / 0.7);"
+            width="xl"
+            position="relative"
+            right="25rem"
+            top="20rem"
+            borderRadius="15px"
+            status="success"
+            variant="subtle"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            height="140px"
+          >
+            <AlertIcon boxSize="40px" mr={0} />
+            <AlertTitle mt={4} mb={1} fontSize="lg">
+              ¡Viaje cancelado!
+            </AlertTitle>
+          </Alert>
+        </ScaleFade>
         <Menu />
       </Flex>
       {loading && (
@@ -328,7 +394,7 @@ export default function TravelPlanning(props) {
                 <Th>Conductores</Th>
                 <Th>Furgón</Th>
                 <Th>Patente</Th>
-                <Th>Opciones</Th>
+                <Th style={{ textAlign: "center" }}>Opciones</Th>
                 <Th>Estado de Viaje</Th>
               </Tr>
             </Thead>
@@ -344,7 +410,56 @@ export default function TravelPlanning(props) {
                   </Td>
                   <Td>{driver.brand_model}</Td>
                   <Td>{driver.unique_code}</Td>
-                  <Td>
+                  <Td style={{ textAlign: "center" }}>
+                    {sizesModalRight.map((size) => (
+                      <Button
+                        onClick={() => handleSizeModalRight(driver.id)}
+                        key={size}
+                        m={4}
+                      >
+                        Estudiantes
+                      </Button>
+                    ))}
+                    {students && (
+                      <Drawer onClose={onClose} isOpen={isOpen} size={size}>
+                        <DrawerOverlay />
+                        <DrawerContent>
+                          <DrawerCloseButton />
+                          <DrawerHeader fontSize="2rem">
+                            Estudiantes
+                            <Text fontSize='2xl'>Cantidad Actual: {driverStudent.length === 0 ? "0" : driverStudent.length}</Text>
+                            <Text position="absolute" left="24rem" top="3.8rem" fontSize='2xl'>Nivel:</Text>
+                          </DrawerHeader>
+                          <DrawerBody>
+                            {driverStudent.length === 0 ? (
+                              <Alert status="warning">
+                                <AlertIcon />
+                                ¡Sin estudiantes asignados!
+                              </Alert>
+                            ) : (
+                              driverStudent.map((student) => (
+                                <>
+                                  <List spacing={3}>
+                                    <ListItem key={student.id}>
+                                      <ListIcon
+                                        as={MdCheckCircle}
+                                        color="green.500"
+                                      />
+                                      {student.name +
+                                        " " +
+                                        student.lastNameP +
+                                        " " +
+                                        student.lastNameM} <Icon as={MinusIcon} /><Icon as={MinusIcon} /><Icon as={MinusIcon} /> {student.nameLevel}
+                                    </ListItem>
+                                    <br></br>
+                                  </List>
+                                </>
+                              ))
+                            )}
+                          </DrawerBody>
+                        </DrawerContent>
+                      </Drawer>
+                    )}
                     {driver.idTravel === null
                       ? sizes.map((size) => (
                           <>
@@ -364,6 +479,51 @@ export default function TravelPlanning(props) {
                         ))
                       : sizes.map((size) => (
                           <>
+                            <Popover>
+                              <PopoverTrigger>
+                                <Button
+                                  onClick={() =>
+                                    showInfoTravel(driver.idTravel)
+                                  }
+                                  colorScheme="messenger"
+                                >
+                                  Ver viaje
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                color="white"
+                                bg="blue.800"
+                                borderColor="blue.800"
+                                width="23rem"
+                              >
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader fontWeight="bold">
+                                  Información del viaje
+                                </PopoverHeader>
+                                <PopoverBody height="5rem" textAlign="left">
+                                  Día:{" "}
+                                  {typeof showTravel[0].date_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : dateFormat}{" "}
+                                  {typeof showTravel[0].hour_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].hour_travel !== null
+                                    ? "Hora: " + showTravel[0].hour_travel
+                                    : ""}
+                                  <br></br>
+                                  Tipo de Viaje:{" "}
+                                  {typeof showTravel[0].type_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].type_travel === "1"
+                                    ? "Ida (Escuela Rural Básica Riñinahue)"
+                                    : "Vuelta (direcciones de estudiantes)"}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
                             <Button
                               disabled={true}
                               background="teal"
@@ -484,205 +644,160 @@ export default function TravelPlanning(props) {
               ))}
             </Tbody>
           </Table>
-          {/* <Collapse startingHeight={0} in={alertDriver}> */}
-          <ScaleFade initialScale={0.9} in={alertDriver}>
-            <Alert
-              boxShadow="0 5px 20px rgb(0 0 0 / 0.7);"
-              width="xl"
-              position="absolute"
-              left="30rem"
-              bottom="20rem"
-              borderRadius="15px"
-              status="warning"
-              variant="subtle"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              textAlign="center"
-              height="140px"
-            >
-              <AlertIcon boxSize="40px" mr={0} />
-              <AlertTitle mt={4} mb={1} fontSize="lg">
-                ¡Importante!
-              </AlertTitle>
-              <AlertDescription maxWidth="sm">
-                El conductor no tiene estudiantes asignados.
-              </AlertDescription>
-            </Alert>
-          </ScaleFade>
-          {/* </Collapse> */}
-          {/* <Collapse startingHeight={0} in={alertDriverSuccess}> */}
-          <ScaleFade initialScale={0.9} in={alertDriverSuccess}>
-            <Alert
-              boxShadow="0 5px 20px rgb(0 0 0 / 0.7);"
-              width="xl"
-              position="absolute"
-              left="30rem"
-              bottom="20rem"
-              borderRadius="15px"
-              status="success"
-              variant="subtle"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              textAlign="center"
-              height="140px"
-            >
-              <AlertIcon boxSize="40px" mr={0} />
-              <AlertTitle mt={4} mb={1} fontSize="lg">
-                ¡Viaje cancelado!
-              </AlertTitle>
-            </Alert>
-          </ScaleFade>
-          {/* </Collapse> */}
         </TableContainer>
       )}
-
-      <Modal
-        onClose={onClose}
-        size={size}
-        isOpen={isOpen}
-        scrollBehavior={scrollBehavior}
-      >
-        <ModalOverlay />
-        <form onSubmit={handleSubmit}>
-          <ModalContent>
-            <ModalHeader>Solicitud de Viaje</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Accordion defaultIndex={[0]} allowMultiple>
-                <AccordionItem>
-                  <h2>
-                    <AccordionButton
-                      onClick={() => handleAccordion()}
-                      background="#b2f5ea"
-                    >
-                      <Box flex="1" textAlign="left">
-                        Estudiantes Asignados
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  {showStudents &&
-                    driverStudent.map((student) =>
-                      driverStudent.length !== 0 ? (
-                        <AccordionPanel background="#F1f5f7" pb={4}>
-                          {student.name +
-                            " " +
-                            student.lastNameP +
-                            " " +
-                            student.lastNameM}
-                        </AccordionPanel>
-                      ) : (
-                        <AccordionPanel background="#F1f5f7" pb={4}>
-                          ¡No tiene estudiantes asignados!
-                        </AccordionPanel>
-                      )
-                    )}
-                </AccordionItem>
-              </Accordion>
-              <br></br>
-
-              <FormLabel as="legend">Fecha de viaje</FormLabel>
-              <br></br>
-              <Center>
-                <Calendar
-                  id="date"
-                  name="date"
-                  // type="date"
-                  // minDate={dateTomorrow}
-                  value={dateState}
-                  onChange={setDateState}
-                  selectRange={selectRange}
-                  view={"month"}
-                  tileContent={<Text color="brand.500"></Text>}
-                  prevLabel={
-                    <Icon as={MdChevronLeft} w="24px" h="24px" mt="4px" />
-                  }
-                  nextLabel={
-                    <Icon as={MdChevronRight} w="24px" h="24px" mt="4px" />
-                  }
-                />
-              </Center>
-              <br></br>
-              {valueRadio === "2" ? (
-                <>
-                  <ScaleFade initialScale={0.9} in={isOpen}>
-                    <FormLabel as="legend">
-                      Hora de llegada al Colegio:
-                    </FormLabel>
-                    <Center>
-                      <div
-                        style={{
-                          background: "#b2f5ea",
-                          borderRadius: "100px",
-                          border: "0px solid black",
-                        }}
+      {modalTravel && (
+        <Modal
+          onClose={onClose}
+          size={size}
+          isOpen={isOpen}
+          scrollBehavior={scrollBehavior}
+        >
+          <ModalOverlay />
+          <form onSubmit={handleSubmit}>
+            <ModalContent>
+              <ModalHeader>Solicitud de Viaje</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <Accordion defaultIndex={[0]} allowMultiple>
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton
+                        onClick={() => handleAccordion()}
+                        background="#b2f5ea"
                       >
-                        <TimePicker onChange={setTimeValue} value={timeValue} />
-                        <select
-                          aria-label="AM"
-                          className="react-time-picker__inputGroup__input react-time-picker__inputGroup__amPm"
-                          data-input="true"
-                          data-select="true"
-                          name="amPm"
+                        <Box flex="1" textAlign="left">
+                          Estudiantes Asignados
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    {showStudents &&
+                      driverStudent.map((student) =>
+                        driverStudent.length !== 0 ? (
+                          <AccordionPanel background="#F1f5f7" pb={4}>
+                            {student.name +
+                              " " +
+                              student.lastNameP +
+                              " " +
+                              student.lastNameM}
+                          </AccordionPanel>
+                        ) : (
+                          <AccordionPanel background="#F1f5f7" pb={4}>
+                            ¡No tiene estudiantes asignados!
+                          </AccordionPanel>
+                        )
+                      )}
+                  </AccordionItem>
+                </Accordion>
+                <br></br>
+
+                <FormLabel as="legend">Fecha de viaje</FormLabel>
+                <br></br>
+                <Center>
+                  <Calendar
+                    id="date"
+                    name="date"
+                    // type="date"
+                    // minDate={dateTomorrow}
+                    value={dateState}
+                    onChange={setDateState}
+                    selectRange={selectRange}
+                    view={"month"}
+                    tileContent={<Text color="brand.500"></Text>}
+                    prevLabel={
+                      <Icon as={MdChevronLeft} w="24px" h="24px" mt="4px" />
+                    }
+                    nextLabel={
+                      <Icon as={MdChevronRight} w="24px" h="24px" mt="4px" />
+                    }
+                  />
+                </Center>
+                <br></br>
+                {valueRadio === "2" ? (
+                  <>
+                    <ScaleFade initialScale={0.9} in={isOpen}>
+                      <FormLabel as="legend">
+                        Hora de llegada al Colegio:
+                      </FormLabel>
+                      <Center>
+                        <div
+                          style={{
+                            background: "#b2f5ea",
+                            borderRadius: "100px",
+                            border: "0px solid black",
+                          }}
                         >
-                          <option value="AM">AM</option>
-                          <option value="PM">PM</option>
-                        </select>
-                      </div>
-                    </Center>
-                  </ScaleFade>
-                </>
-              ) : null}
-              <br></br>
-              <FormLabel as="legend">
-                <Icon w="25px" h="25px" as={FaRoute} color={brandColor} />
-                Tipo de viaje
-              </FormLabel>
-              <RadioGroup onChange={setValueRadio} value={valueRadio}>
-                <Stack direction="row">
-                  <Radio value="1">Ida (Escuela Rural Básica Riñinahue)</Radio>
-                  <Radio onClick={onToggle} value="2">
-                    Vuelta (direcciones de estudiantes)
-                  </Radio>
-                </Stack>
-              </RadioGroup>
-            </ModalBody>
-            {showError && (
-              <SlideFade startingHeight={1} in={isOpen}>
-                <Alert status="error">
-                  <AlertIcon />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>
-                    ¡Debe ingresar una fecha posterior a la actual!
-                  </AlertDescription>
-                </Alert>
-              </SlideFade>
-            )}
-            {showSuccess && (
-              <SlideFade startingHeight={1} in={isOpen}>
-                <Alert status="success" variant="left-accent">
-                  <AlertIcon />
-                  ¡Solicitud registrada y enviada al conductor!
-                </Alert>
-              </SlideFade>
-            )}
-            <ModalFooter>
-              <Button
-                // style={{ backgroundColor, cursor }}
-                background="teal"
-                type="submit"
-                color="white"
-                m={4}
-              >
-                Registrar
-              </Button>
-              <Button onClick={onClose}>Cerrar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </form>
-      </Modal>
+                          <TimePicker
+                            onChange={setTimeValue}
+                            value={timeValue}
+                          />
+                          <select
+                            aria-label="AM"
+                            className="react-time-picker__inputGroup__input react-time-picker__inputGroup__amPm"
+                            data-input="true"
+                            data-select="true"
+                            name="amPm"
+                          >
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                          </select>
+                        </div>
+                      </Center>
+                    </ScaleFade>
+                  </>
+                ) : null}
+                <br></br>
+                <FormLabel as="legend">
+                  <Icon w="25px" h="25px" as={FaRoute} color={brandColor} />
+                  Tipo de viaje
+                </FormLabel>
+                <RadioGroup onChange={setValueRadio} value={valueRadio}>
+                  <Stack direction="row">
+                    <Radio value="1">
+                      Ida (Escuela Rural Básica Riñinahue)
+                    </Radio>
+                    <Radio onClick={onToggle} value="2">
+                      Vuelta (direcciones de estudiantes)
+                    </Radio>
+                  </Stack>
+                </RadioGroup>
+              </ModalBody>
+              {showError && (
+                <SlideFade startingHeight={1} in={isOpen}>
+                  <Alert status="error">
+                    <AlertIcon />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                      ¡Debe ingresar una fecha posterior a la actual!
+                    </AlertDescription>
+                  </Alert>
+                </SlideFade>
+              )}
+              {showSuccess && (
+                <SlideFade startingHeight={1} in={isOpen}>
+                  <Alert status="success" variant="left-accent">
+                    <AlertIcon />
+                    ¡Solicitud registrada y enviada al conductor!
+                  </Alert>
+                </SlideFade>
+              )}
+              <ModalFooter>
+                <Button
+                  // style={{ backgroundColor, cursor }}
+                  background="teal"
+                  type="submit"
+                  color="white"
+                  m={4}
+                >
+                  Registrar
+                </Button>
+                <Button onClick={onClose}>Cerrar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </form>
+        </Modal>
+      )}
 
       {/* <TableContainer>
         <Table size="sm">

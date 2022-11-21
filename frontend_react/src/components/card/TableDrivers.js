@@ -54,6 +54,7 @@ import { FaUser, FaAsterisk, FaCheckCircle } from "react-icons/fa";
 import { EmailIcon, LockIcon } from "@chakra-ui/icons";
 import { useRut } from "react-rut-formatter";
 import axios from "axios";
+import { Field, Form, Formik } from "formik";
 
 const TableDrivers = ({ drivers, countDriver }) => {
   const textColor = useColorModeValue("gray.700", "white");
@@ -76,15 +77,9 @@ const TableDrivers = ({ drivers, countDriver }) => {
   const [alertErrorUpdate, setAlertErrorUpdate] = useState(false);
   const [alertSuccessUpdate, setAlertSuccessUpdate] = useState(false);
   let count = 1;
-
+  const NAME_REGEX = /^[ a-zA-ZÀ-ú]+$/;
   const initialValues = {
     rut: "",
-    name: "",
-    lastNameP: "",
-    lastNameM: "",
-    enterprise: "",
-    car: "",
-    code: "",
   };
   const initialValuesUpdate = {
     nameToUpdate: "",
@@ -105,42 +100,31 @@ const TableDrivers = ({ drivers, countDriver }) => {
     setFormValuesUpdate({ ...formValuesUpdate, [name]: value });
   };
 
-  const isErrorName = formValues.name === "";
-  const isErrorLastNameP = formValues.lastNameP === "";
-  const isErrorLastNameM = formValues.lastNameM === "";
-  const isErrorEnterprise = formValues.enterprise === "";
-  const isErrorCar = formValues.car === "";
-  const isErrorCode = formValues.code === "";
-
   const isErrorName_update = formValues.name === "";
   const isErrorEnterprise_update = formValues.enterprise === "";
   const isErrorCar_update = formValues.car === "";
   const isErrorCode_update = formValues.code === "";
 
-  const handleAddDriver = async (event) => {
-    const formData = new FormData(event.currentTarget);
-    event.preventDefault();
-    let resultArray = [];
-    for (let [key, value] of formData.entries()) {
-      resultArray.push(value);
-    }
+  const handleAddDriver = async (values) => {
+    Object.assign(values, { rut: formValues.rut });
     const getAllUsers = await axios.get(`${endPoint}/getAllUsers/`);
-    let responseUsers = getAllUsers.data;
-    let rut = resultArray[0];
-    let duplicateRut = checkDuplicateRut(responseUsers, rut);
+    let users = getAllUsers.data;
+    let rut = values.rut;
+    let duplicateRut = checkDuplicateRut(users, rut);
+    console.log(values);
     if (duplicateRut.length > 0) {
       setRutError(true);
       setSuccess(false);
       setError(false);
       setShow(true);
     } else if (
-      resultArray[0] === "" ||
-      resultArray[1] === "" ||
-      resultArray[2] === "" ||
-      resultArray[3] === "" ||
-      resultArray[4] === "" ||
-      resultArray[5] === "" ||
-      resultArray[6] === ""
+      values.rut === "" ||
+      values.name === "" ||
+      values.lastNameP === "" ||
+      values.lastNameM === "" ||
+      values.enterprise === "" ||
+      values.car === "" ||
+      values.code === ""
     ) {
       setError(true);
       setSuccess(false);
@@ -148,13 +132,13 @@ const TableDrivers = ({ drivers, countDriver }) => {
       setShow(true);
     } else {
       await axios.post(`${endPoint}/AddDriver/`, {
-        rut: resultArray[0],
-        nameDriver: resultArray[1],
-        lastNameP: resultArray[2],
-        lastNameM: resultArray[3],
-        enterprise: resultArray[4],
-        car: resultArray[5],
-        code: resultArray[6],
+        rut: values.rut,
+        nameDriver: values.name,
+        lastNameP: values.lastNameP,
+        lastNameM: values.lastNameM,
+        enterprise: values.enterprise,
+        car: values.car,
+        code: values.code,
       });
       const responseDrivers = await axios.get(`${endPoint}/drivers/`);
       let resultDrivers = responseDrivers.data;
@@ -163,19 +147,14 @@ const TableDrivers = ({ drivers, countDriver }) => {
     }
   };
 
-  const handleEditDriver = async (event) => {
-    const formData = new FormData(event.currentTarget);
-    event.preventDefault();
-    let resultArray = [];
-    for (let [key, value] of formData.entries()) {
-      resultArray.push(value);
-    }
-    let parameters = resultArray.slice(0, 2);
-    let splitName = resultArray[3].split(" ");
+  const handleUpdateDriver = async (values) => {
+    const arrayValues = Object.values(values);
+    let parameters = arrayValues.slice(0, 2);
+    let splitName = arrayValues[3].split(" ");
     let firstNames;
-    let lastPaternal
-    let lastMaternal
-    if(splitName.length === 3){
+    let lastPaternal;
+    let lastMaternal;
+    if (splitName.length === 3) {
       firstNames = splitName[0];
       lastPaternal = splitName[1];
       lastMaternal = splitName[2];
@@ -185,11 +164,11 @@ const TableDrivers = ({ drivers, countDriver }) => {
       lastMaternal = splitName[3];
     }
     if (
-      resultArray[2] === "" ||
-      resultArray[3] === "" ||
-      resultArray[4] === "" ||
-      resultArray[5] === "" ||
-      resultArray[6] === ""
+      arrayValues[2] === "" ||
+      arrayValues[3] === "" ||
+      arrayValues[4] === "" ||
+      arrayValues[5] === "" ||
+      arrayValues[6] === ""
     ) {
       setAlertErrorUpdate(true);
       setAlertSuccessUpdate(false);
@@ -197,14 +176,14 @@ const TableDrivers = ({ drivers, countDriver }) => {
       setShow(true);
     } else {
       await axios.put(`${endPoint}/UpdateInfoDriver/${parameters}`, {
-        rut: resultArray[2],
+        rutDriver: arrayValues[2],
         nameDriver: firstNames,
         lastNameP: lastPaternal,
         lastNameM: lastMaternal,
-        enterprise: resultArray[4],
-        car: resultArray[5],
-        code: resultArray[6],
-        email: resultArray[7],
+        enterprise: arrayValues[4],
+        car: arrayValues[5],
+        code: arrayValues[6],
+        email: arrayValues[7]
       });
       const responseDrivers = await axios.get(`${endPoint}/drivers/`);
       let resultDrivers = responseDrivers.data;
@@ -304,6 +283,76 @@ const TableDrivers = ({ drivers, countDriver }) => {
     onOpen();
   };
 
+  const validateName = (value) => {
+    let name = NAME_REGEX.test(value);
+    let error;
+    if (!value) {
+      error = "El nombre es requerido";
+    } else if (!name) {
+      error = "El nombre sólo debe contener letras";
+    } else if (value.length <= 3) {
+      error = "El nombre deben contener más de 3 caracteres";
+    }
+    return error;
+  };
+  const validateNameUpdate = (value) => {
+    let name = NAME_REGEX.test(value);
+    let error;
+    if (!value) {
+      error = "El nombre y apellido es requerido";
+    } else if (!name) {
+      error = "El nombre y apellido sólo debe contener letras";
+    } else if (value.length <= 10) {
+      error = "El nombre y apellido debe contener más de 10 caracteres";
+    }
+    return error;
+  };
+  const validateLastNameP = (value) => {
+    let name = NAME_REGEX.test(value);
+    let error;
+    if (!value) {
+      error = "El apellido paterno es requerido";
+    } else if (!name) {
+      error = "El apellido paterno sólo debe contener letras";
+    } else if (value.length <= 2) {
+      error = "El apellido paterno deben contener más de 2 caracteres";
+    }
+    return error;
+  };
+  const validateLastNameM = (value) => {
+    let name = NAME_REGEX.test(value);
+    let error;
+    if (!value) {
+      error = "El apellido materno es requerido";
+    } else if (!name) {
+      error = "El apellido materno sólo debe contener letras";
+    } else if (value.length <= 2) {
+      error = "El apellido materno deben contener más de 2 caracteres";
+    }
+    return error;
+  };
+  const validateEnterprise = (value) => {
+    let error;
+    if (!value) {
+      error = "La empresa de contrato es requerida";
+    }
+    return error;
+  };
+  const validateCar = (value) => {
+    let error;
+    if (!value) {
+      error = "El modelo y marca del furgón es requerido";
+    }
+    return error;
+  };
+  const validateCode = (value) => {
+    let error;
+    if (!value) {
+      error = "El número de patente es requerido";
+    }
+    return error;
+  };
+
   return (
     <Card
       direction="column"
@@ -328,312 +377,224 @@ const TableDrivers = ({ drivers, countDriver }) => {
           onClose={onClose}
         >
           <ModalOverlay />
-          <form onSubmit={handleAddDriver}>
-            <ModalContent>
-              <ModalHeader>Registro Conductor</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <FormControl isInvalid={!isValid}>
-                  <FormLabel>Rut</FormLabel>
-                  <Input
-                    type="text"
-                    id="rut"
-                    name="rut"
-                    // ref={initialRef}
-                    placeholder="Rut"
-                    value={(formValues.rut = rut.formatted)}
-                    onChange={(e) => updateRut(e.target.value)}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="3.5rem"
-                    left="1.7rem"
-                  />
-                </FormControl>
-                {!isValid ? (
-                  <span style={{ color: "red" }}>¡Rut inválido!</span>
-                ) : (
-                  <Icon
-                    ml="23rem"
-                    pos="relative"
-                    bottom="2rem"
-                    as={FaCheckCircle}
-                    w="1.4rem"
-                    h="1.4rem"
-                    fontWeight="2000"
-                    color="green"
-                  />
+          <ModalContent>
+            <ModalHeader>Registro Conductor</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Formik
+                initialValues={{
+                  name: "",
+                  lastNameP: "",
+                  lastNameM: "",
+                  enterprise: "",
+                  car: "",
+                  code: "",
+                  email: "",
+                }}
+                onSubmit={(values) => handleAddDriver(values)}
+              >
+                {(props) => (
+                  <Form noValidate="novalidate">
+                    <FormControl isInvalid={!isValid}>
+                      <FormLabel>Rut</FormLabel>
+                      <Input
+                        type="text"
+                        id="rut"
+                        name="rut"
+                        placeholder="Rut"
+                        value={(formValues.rut = rut.formatted)}
+                        onChange={(e) => updateRut(e.target.value)}
+                      />
+                      <Icon
+                        as={FaAsterisk}
+                        color="red"
+                        w="0.7rem"
+                        h="0.7rem"
+                        pos="absolute"
+                        bottom="3.5rem"
+                        left="1.7rem"
+                      />
+                    </FormControl>
+                    {!isValid ? (
+                      <span style={{ color: "red" }}>¡Rut inválido!</span>
+                    ) : (
+                      <Icon
+                        ml="23rem"
+                        pos="relative"
+                        bottom="2rem"
+                        as={FaCheckCircle}
+                        w="1.4rem"
+                        h="1.4rem"
+                        fontWeight="2000"
+                        color="green"
+                      />
+                    )}
+                    <Field name="name" validate={validateName}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.name && form.touched.name}
+                        >
+                          <FormLabel>Nombres</FormLabel>
+                          <Input
+                            {...field}
+                            placeholder="Primer y segundo nombre"
+                          />
+                          <FormErrorMessage>
+                            {form.errors.name}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="lastNameP" validate={validateLastNameP}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={
+                            form.errors.lastNameP && form.touched.lastNameP
+                          }
+                        >
+                          <FormLabel>Apellido Paterno</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.lastNameP}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="lastNameM" validate={validateLastNameM}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={
+                            form.errors.lastNameM && form.touched.lastNameM
+                          }
+                        >
+                          <FormLabel>Apellido Materno</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.lastNameM}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="enterprise" validate={validateEnterprise}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={
+                            form.errors.enterprise && form.touched.enterprise
+                          }
+                        >
+                          <FormLabel>Empresa de Contrato</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.enterprise}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="car" validate={validateCar}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.car && form.touched.car}
+                        >
+                          <FormLabel>Marca y Modelo de Furgón</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>{form.errors.car}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="code" validate={validateCode}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.code && form.touched.code}
+                        >
+                          <FormLabel>Número de Patente</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.code}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="email">
+                      {({ field }) => (
+                        <FormControl mt={3}>
+                          <FormLabel>Correo (Opcional):</FormLabel>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                      )}
+                    </Field>
+
+                    {success && (
+                      <SlideFade startingHeight={1} in={show}>
+                        <Box my={4}>
+                          <Alert
+                            status="success"
+                            variant="solid"
+                            borderRadius={4}
+                          >
+                            <AlertIcon />
+                            Conductor Registrado!
+                          </Alert>
+                        </Box>
+                      </SlideFade>
+                    )}
+                    {error && (
+                      <SlideFade startingHeight={1} in={show}>
+                        <Box my={4}>
+                          <Alert
+                            status="error"
+                            variant="solid"
+                            borderRadius={4}
+                          >
+                            <AlertIcon />
+                            ¡Debe completar los campos requeridos!
+                          </Alert>
+                        </Box>
+                      </SlideFade>
+                    )}
+                    {rutError && (
+                      <SlideFade startingHeight={1} in={show}>
+                        <Box my={4}>
+                          <Alert
+                            status="error"
+                            variant="solid"
+                            borderRadius={4}
+                          >
+                            <AlertIcon />
+                            ¡El Rut ya se encuentra registrado!
+                          </Alert>
+                        </Box>
+                      </SlideFade>
+                    )}
+                    <ModalFooter>
+                      <Button
+                        mt={4}
+                        colorScheme="whatsapp"
+                        isLoading={props.isSubmitting}
+                        type="submit"
+                      >
+                        Agregar
+                      </Button>
+                      <Button ml={2} mt={4} onClick={onClose}>
+                        Cancelar
+                      </Button>
+                    </ModalFooter>
+                  </Form>
                 )}
-                <FormControl mt={4} isInvalid={isErrorName}>
-                  <FormLabel>Nombres y Apellidos</FormLabel>
-                  <Input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Nombres y Apellidos"
-                    value={formValues.name}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.1rem"
-                    left="9.3rem"
-                  />
-                  {!isErrorName ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El nombre es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={isErrorLastNameP}>
-                  <FormLabel>Apellido Paterno</FormLabel>
-                  <Input
-                    type="text"
-                    id="lastNameP"
-                    name="lastNameP"
-                    placeholder=""
-                    value={formValues.lastNameP}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="7.4rem"
-                  />
-                  {!isErrorLastNameP ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El apellido paterno es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={isErrorLastNameM}>
-                  <FormLabel>Apellido Materno</FormLabel>
-                  <Input
-                    type="text"
-                    id="lastNameM"
-                    name="lastNameM"
-                    placeholder=""
-                    value={formValues.lastNameM}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="7.7rem"
-                  />
-                  {!isErrorLastNameM ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El apellido materno es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={isErrorEnterprise}>
-                  <FormLabel>Empresa de Contrato</FormLabel>
-                  <Input
-                    type="text"
-                    id="enterprise"
-                    name="enterprise"
-                    placeholder=""
-                    value={formValues.enterprise}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.1rem"
-                    left="9.7rem"
-                  />
-                  {!isErrorEnterprise ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡La empresa es requerida!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={isErrorCar}>
-                  <FormLabel>Marca y Modelo de Auto</FormLabel>
-                  <Input
-                    type="text"
-                    id="car"
-                    name="car"
-                    placeholder=""
-                    value={formValues.car}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5rem"
-                    left="11rem"
-                  />
-                  {!isErrorCar ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El modelo del auto es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={isErrorCode}>
-                  <FormLabel>Número de Patente</FormLabel>
-                  <Input
-                    type="text"
-                    id="code"
-                    name="code"
-                    placeholder=""
-                    value={formValues.code}
-                    onChange={handleInputChange}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="8.8rem"
-                  />
-                  {!isErrorCode ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡La patente es requerida!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel>Correo (Opcional):</FormLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="ejemplo@gmail.com"
-                    value={formValues.email}
-                    onChange={handleInputChange}
-                  />
-                </FormControl>
-              </ModalBody>
-              {success && (
-                <SlideFade startingHeight={1} in={show}>
-                  <Box my={4}>
-                    <Alert status="success" variant="solid" borderRadius={4}>
-                      <AlertIcon />
-                      Conductor Registrado!
-                    </Alert>
-                  </Box>
-                </SlideFade>
-              )}
-              {error && (
-                <SlideFade startingHeight={1} in={show}>
-                  <Box my={4}>
-                    <Alert status="error" variant="solid" borderRadius={4}>
-                      <AlertIcon />
-                      ¡Debe completar los campos requeridos!
-                    </Alert>
-                  </Box>
-                </SlideFade>
-              )}
-              {rutError && (
-                <SlideFade startingHeight={1} in={show}>
-                  <Box my={4}>
-                    <Alert status="error" variant="solid" borderRadius={4}>
-                      <AlertIcon />
-                      ¡El Rut ya se encuentra registrado!
-                    </Alert>
-                  </Box>
-                </SlideFade>
-              )}
-              <ModalFooter>
-                <Button type="submit" colorScheme="blue" mr={3}>
-                  Agregar
-                </Button>
-                <Button onClick={onClose}>Cancelar</Button>
-              </ModalFooter>
-            </ModalContent>
-          </form>
+              </Formik>
+            </ModalBody>
+          </ModalContent>
         </Modal>
       )}
 
@@ -875,237 +836,147 @@ const TableDrivers = ({ drivers, countDriver }) => {
           onClose={onClose}
         >
           <ModalOverlay />
-          <form onSubmit={handleEditDriver}>
-            <ModalContent>
-              <ModalHeader>Editar Conductor</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <FormControl>
-                  <FormLabel>Rut</FormLabel>
-                  <Input
-                    id="id"
-                    name="id"
-                    type="hidden"
-                    defaultValue={driverInfo[0].id}
-                  />
-                  <Input
-                    id="id"
-                    name="id"
-                    type="hidden"
-                    defaultValue={driverInfo[0].van_id}
-                  />
-                  <Input
-                    type="text"
-                    id="rut"
-                    name="rut"
-                    readOnly={true}
-                    placeholder="Rut"
-                    value={driverInfo[0].rutDriver}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="3.5rem"
-                    left="1.7rem"
-                  />
-                </FormControl>
-                <Icon
-                  ml="23rem"
-                  pos="relative"
-                  bottom="2rem"
-                  as={FaCheckCircle}
-                  w="1.4rem"
-                  h="1.4rem"
-                  fontWeight="2000"
-                  color="green"
-                />
-                <FormControl mt={4} isValid={!isErrorName_update}>
-                  <FormLabel>Nombres y Apellidos</FormLabel>
-                  <Input
-                    type="text"
-                    id="nameToUpdate"
-                    name="nameToUpdate"
-                    placeholder="Nombres y Apellidos"
-                    defaultValue={driverInfo[0].nameDriver}
-                    onChange={handleInputChangeUpdate}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="9.3rem"
-                  />
-                  {isErrorName_update ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El nombre es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={!isErrorEnterprise_update}>
-                  <FormLabel>Empresa de Contrato</FormLabel>
-                  <Input
-                    type="text"
-                    id="enterpriseToUpdate"
-                    name="enterpriseToUpdate"
-                    placeholder=""
-                    defaultValue={driverInfo[0].enterprise}
-                    onChange={handleInputChangeUpdate}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.1rem"
-                    left="9.7rem"
-                  />
-                  {isErrorEnterprise_update ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡La empresa es requerida!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={!isErrorCar_update}>
-                  <FormLabel>Marca y Modelo de Auto</FormLabel>
-                  <Input
-                    type="text"
-                    id="carToUpdate"
-                    name="carToUpdate"
-                    placeholder=""
-                    defaultValue={driverInfo[0].brand_model}
-                    onChange={handleInputChangeUpdate}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="11rem"
-                  />
-                  {isErrorCar_update ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡El modelo del auto es requerido!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={!isErrorCode_update}>
-                  <FormLabel>Número de Patente</FormLabel>
-                  <Input
-                    type="text"
-                    id="codeToUpdate"
-                    name="codeToUpdate"
-                    placeholder=""
-                    defaultValue={driverInfo[0].unique_code}
-                    onChange={handleInputChangeUpdate}
-                  />
-                  <Icon
-                    as={FaAsterisk}
-                    color="red"
-                    w="0.7rem"
-                    h="0.7rem"
-                    pos="absolute"
-                    bottom="5.2rem"
-                    left="8.8rem"
-                  />
-                  {isErrorCode_update ? (
-                    <Icon
-                      ml="23rem"
-                      pos="relative"
-                      bottom="2rem"
-                      as={FaCheckCircle}
-                      w="1.4rem"
-                      h="1.4rem"
-                      fontWeight="2000"
-                      color="green"
-                    />
-                  ) : (
-                    <FormErrorMessage>
-                      ¡La patente es requerida!
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel>Correo (Opcional):</FormLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="ejemplo@gmail.com"
-                    defaultValue={driverInfo[0].email}
-                    onChange={handleInputChange}
-                  />
-                </FormControl>
-              </ModalBody>
-              {alertSuccessUpdate && (
-                <SlideFade startingHeight={1} in={show}>
-                  <Box my={4}>
-                    <Alert status="success" variant="solid" borderRadius={4}>
-                      <AlertIcon />
-                      Información Actualizada!
-                    </Alert>
-                  </Box>
-                </SlideFade>
-              )}
-              {alertErrorUpdate && (
-                <SlideFade startingHeight={1} in={show}>
-                  <Box my={4}>
-                    <Alert status="error" variant="solid" borderRadius={4}>
-                      <AlertIcon />
-                      ¡Debe completar los campos requeridos!
-                    </Alert>
-                  </Box>
-                </SlideFade>
-              )}
-              <ModalFooter>
-                <Button type="submit" colorScheme="blue" mr={3}>
-                  Guardar cambios
-                </Button>
-                <Button onClick={onClose}>Cancelar</Button>
-              </ModalFooter>
-            </ModalContent>
-          </form>
+          <ModalContent>
+            <ModalHeader>Editar Conductor</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <Formik
+                initialValues={{
+                  id: driverInfo[0].id,
+                  idVan: driverInfo[0].van_id,
+                  rutDriver: driverInfo[0].rutDriver,
+                  name: driverInfo[0].nameDriver,
+                  enterprise: driverInfo[0].enterprise,
+                  car: driverInfo[0].brand_model,
+                  code: driverInfo[0].unique_code,
+                  email: driverInfo[0].email
+                }}
+                onSubmit={(values) => handleUpdateDriver(values)}
+              >
+                {(props) => (
+                  <Form>
+                    <Field name="rutDriver">
+                      {({ field }) => (
+                        <FormControl mt={3} isRequired>
+                          <FormLabel>Nombres</FormLabel>
+                          <Input {...field} readOnly={true} />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="name" validate={validateNameUpdate}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.name && form.touched.name}
+                        >
+                          <FormLabel>Nombres</FormLabel>
+                          <Input {...field} placeholder="Nombres" />
+                          <FormErrorMessage>
+                            {form.errors.name}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="enterprise" validate={validateEnterprise}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={
+                            form.errors.enterprise && form.touched.enterprise
+                          }
+                        >
+                          <FormLabel>Empresa de Contrato</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.enterprise}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="car" validate={validateCar}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.car && form.touched.car}
+                        >
+                          <FormLabel>Marca y Modelo de Furgón</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>{form.errors.car}</FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="code" validate={validateCode}>
+                      {({ field, form }) => (
+                        <FormControl
+                          mt={3}
+                          isRequired
+                          isInvalid={form.errors.code && form.touched.code}
+                        >
+                          <FormLabel>Número de Patente</FormLabel>
+                          <Input {...field} />
+                          <FormErrorMessage>
+                            {form.errors.code}
+                          </FormErrorMessage>
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="email">
+                      {({ field }) => (
+                        <FormControl mt={3}>
+                          <FormLabel>Correo (Opcional):</FormLabel>
+                          <Input type="email" {...field} />
+                        </FormControl>
+                      )}
+                    </Field>
+                    {alertSuccessUpdate && (
+                      <SlideFade startingHeight={1} in={show}>
+                        <Box my={4}>
+                          <Alert
+                            status="success"
+                            variant="solid"
+                            borderRadius={4}
+                          >
+                            <AlertIcon />
+                            Información Actualizada!
+                          </Alert>
+                        </Box>
+                      </SlideFade>
+                    )}
+                    {alertErrorUpdate && (
+                      <SlideFade startingHeight={1} in={show}>
+                        <Box my={4}>
+                          <Alert
+                            status="error"
+                            variant="solid"
+                            borderRadius={4}
+                          >
+                            <AlertIcon />
+                            ¡Debe completar los campos requeridos!
+                          </Alert>
+                        </Box>
+                      </SlideFade>
+                    )}
+                    <ModalFooter>
+                      <Button
+                        mt={4}
+                        colorScheme="whatsapp"
+                        isLoading={props.isSubmitting}
+                        type="submit"
+                      >
+                        Guardar Cambios
+                      </Button>
+                      <Button ml={2} mt={4} onClick={onClose}>
+                        Cancelar
+                      </Button>
+                    </ModalFooter>
+                  </Form>
+                )}
+              </Formik>
+            </ModalBody>
+          </ModalContent>
         </Modal>
       )}
       {modalDelete && (

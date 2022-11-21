@@ -14,10 +14,8 @@ import MainDashboard from "views/admin/default";
 import NFTMarketplace from "views/admin/marketplace";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/dataTables";
-import RTL from "views/admin/rtl";
-
-// Auth Imports
-import SignInCentered from "views/auth/signIn";
+import TrackingMap from "views/admin/rtl/TrackingMap";
+import { FaMapMarkerAlt } from 'react-icons/fa';
 
 const routes = [
   {
@@ -50,11 +48,11 @@ const routes = [
     component: Profile,
   },
   {
-    name: "Sign In",
-    layout: "/auth",
-    path: "/sign-in",
-    icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
-    component: SignInCentered,
+    name: "Rastreo",
+    layout: "/admin",
+    path: "/rtl",
+    icon: <Icon as={FaMapMarkerAlt} width="20px" height="20px" color="inherit" />,
+    component: TrackingMap,
   },
 ];
 
