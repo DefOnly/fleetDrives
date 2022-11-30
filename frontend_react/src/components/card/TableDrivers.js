@@ -854,11 +854,11 @@ const TableDrivers = ({ drivers, countDriver }) => {
                 onSubmit={(values) => handleUpdateDriver(values)}
               >
                 {(props) => (
-                  <Form>
+                  <Form noValidate="novalidate">
                     <Field name="rutDriver">
                       {({ field }) => (
                         <FormControl mt={3} isRequired>
-                          <FormLabel>Nombres</FormLabel>
+                          <FormLabel>Rut</FormLabel>
                           <Input {...field} readOnly={true} />
                         </FormControl>
                       )}
@@ -870,7 +870,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                           isRequired
                           isInvalid={form.errors.name && form.touched.name}
                         >
-                          <FormLabel>Nombres</FormLabel>
+                          <FormLabel>Nombres y Apellidos</FormLabel>
                           <Input {...field} placeholder="Nombres" />
                           <FormErrorMessage>
                             {form.errors.name}

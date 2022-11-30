@@ -47,7 +47,7 @@ class CreateUsersTable extends Migration
             $table->integer('id_level');
             $table->string('zone')->nullable();
             $table->string('address')->nullable();
-            $table->integer('coordinates')->nullable();
+            $table->integer('id_coordinates')->nullable();
             $table->integer('id_agent');
             $table->integer('id_province');
             $table->foreignId('id_driver')

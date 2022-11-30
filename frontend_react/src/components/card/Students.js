@@ -242,6 +242,7 @@ export default function Students(props) {
           phone: values.phone,
           emailAgent: values.emailAgent,
         });
+        // getCoordinates();
       } else {
         await axios.post(`${endPoint}/AddStudentBasica/`, {
           rut: values.rut,
@@ -264,6 +265,20 @@ export default function Students(props) {
       UpdateStateStudents(id_level);
     }
   };
+
+  const getCoordinates =  () => {
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/epulaf.json?country=cl&proximity=ip&types=place%2Cpostcode%2Caddress&language=es&access_token=pk.eyJ1IjoiZGVmb25seSIsImEiOiJjbGE2N25kc3UwMHBlM29zMHFpbWFvaHAzIn0.6byxMcCQvzsHBdIITgSZlw`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Error status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(result => {
+              console.log(result.features[0].center);
+            })
+            .catch(err => console.log(err));
+  }
 
   const checkDuplicateRut = (users, rut) => {
     let response = users.filter(
