@@ -27,6 +27,8 @@ import { FaEthereum } from "react-icons/fa";
 import routes from "routes.js";
 import { ThemeEditor } from "./ThemeEditor";
 import AuthUser from "views/auth/signIn/AuthUser";
+import { FaUserCircle } from "react-icons/fa";
+import { RiUserSharedFill } from "react-icons/ri";
 export default function HeaderLinks(props) {
   const { token, getUser, logout } = AuthUser();
   const logoutUser = () => {
@@ -59,11 +61,11 @@ export default function HeaderLinks(props) {
       p='10px'
       borderRadius='30px'
       boxShadow={shadow}>
-      <SearchBar
+      {/* <SearchBar
         mb={secondary ? { base: "10px", md: "unset" } : "unset"}
         me='10px'
         borderRadius='30px'
-      />
+      /> */}
       <Flex
         bg={ethBg}
         display={secondary ? "flex" : "none"}
@@ -80,7 +82,7 @@ export default function HeaderLinks(props) {
           w='29px'
           borderRadius='30px'
           me='7px'>
-          <Icon color={ethColor} w='9px' h='14px' as={FaEthereum} />
+          <Icon color={ethColor} w='18px' h='18px' as={RiUserSharedFill} />
         </Flex>
         <Text
           w='max-content'
@@ -88,11 +90,11 @@ export default function HeaderLinks(props) {
           fontSize='sm'
           fontWeight='700'
           me='6px'>
-          1,924
-          <Text as='span' display={{ base: "none", md: "unset" }}>
+          Estudiantes y Conductores
+          {/* <Text as='span' display={{ base: "none", md: "unset" }}>
             {" "}
             ETH
-          </Text>
+          </Text> */}
         </Text>
       </Flex>
       <SidebarResponsive routes={routes} />
@@ -154,7 +156,7 @@ export default function HeaderLinks(props) {
         </MenuList>
       </Menu>
 
-      <Menu>
+      {/* <Menu>
         <MenuButton p='0px'>
           <Icon
             mt='6px'
@@ -209,13 +211,21 @@ export default function HeaderLinks(props) {
             </Link>
           </Flex>
         </MenuList>
-      </Menu>
+      </Menu> */}
 
-      <ThemeEditor navbarIcon={navbarIcon} /> 
+      {/* <ThemeEditor navbarIcon={navbarIcon} />  */}
 
       <Menu>
         <MenuButton p='0px'>
-          <Avatar
+        <Icon
+                  mt="8px"
+                  as={FaUserCircle}
+                  w="2rem"
+                  h="2rem"
+                  fontWeight="2000"
+                  color="black"
+                />
+          {/* <Avatar
             _hover={{ cursor: "pointer" }}
             color='white'
             name={JSON.stringify(getUser().name)}
@@ -223,7 +233,7 @@ export default function HeaderLinks(props) {
             size='sm'
             w='40px'
             h='40px'
-          />
+          /> */}
         </MenuButton>
         <MenuList
           boxShadow={shadow}
@@ -231,7 +241,8 @@ export default function HeaderLinks(props) {
           mt='10px'
           borderRadius='20px'
           bg={menuBg}
-          border='none'>
+          border='none'
+          zIndex="999">
           <Flex w='100%' mb='0px'>
             <Text
               ps='20px'

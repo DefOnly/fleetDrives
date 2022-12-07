@@ -51,10 +51,11 @@ import { useColorModeValue } from "@chakra-ui/react";
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
 import { FaUser, FaAsterisk, FaCheckCircle } from "react-icons/fa";
-import { EmailIcon, LockIcon } from "@chakra-ui/icons";
+import { EmailIcon, LockIcon, UnlockIcon } from "@chakra-ui/icons";
 import { useRut } from "react-rut-formatter";
 import axios from "axios";
 import { Field, Form, Formik } from "formik";
+import AuthUser from "views/auth/signIn/AuthUser";
 
 const TableDrivers = ({ drivers, countDriver }) => {
   const textColor = useColorModeValue("gray.700", "white");
@@ -71,6 +72,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
   const [modalDriver, setModalDriver] = useState(false);
   const [modalUpdateDriver, setModalUpdateDriver] = useState(false);
   const cancelRef = React.useRef();
+  const [modalAllow, setModalAllow] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [countDrivers, setCountDrivers] = useState(countDriver);
   const endPoint = "http://localhost:8000/api";
@@ -89,6 +91,16 @@ const TableDrivers = ({ drivers, countDriver }) => {
   };
   const [formValues, setFormValues] = useState(initialValues);
   const [formValuesUpdate, setFormValuesUpdate] = useState(initialValuesUpdate);
+  const [pin1, setPin1] = useState([]);
+  const [pin2, setPin2] = useState([]);
+  const [pin3, setPin3] = useState([]);
+  const [pin4, setPin4] = useState([]);
+  const [pinGenerate, setPinGenerate] = useState([]);
+  const { getUser } = AuthUser();
+  const [idDriver, setIdDriver] = useState([]);
+  const [successPin, setSuccessPin] = useState(false);
+  const [errorPin, setErrorPin] = useState(false);
+  const [messageSuccess, setMessageSuccess] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -183,7 +195,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
         enterprise: arrayValues[4],
         car: arrayValues[5],
         code: arrayValues[6],
-        email: arrayValues[7]
+        email: arrayValues[7],
       });
       const responseDrivers = await axios.get(`${endPoint}/drivers/`);
       let resultDrivers = responseDrivers.data;
@@ -241,11 +253,19 @@ const TableDrivers = ({ drivers, countDriver }) => {
     return response;
   };
 
-  const deleteDriver = async (idDriver) => {
-    // const response = await axios.get(`${endPoint}/drivers/`);
-    // setDrivers(response.data);
-    // setCurrentDriver(idDriver);
+  const InactiveDriver = async (idDriver) => {
+    setIdDriver(idDriver);
     setModalDelete(true);
+    setModalAllow(false);
+    setModalDriver(false);
+    setModalUpdateDriver(false);
+    onOpen();
+  };
+
+  const ActiveDriver = async (idDriver) => {
+    setIdDriver(idDriver);
+    setModalAllow(true);
+    setModalDelete(false);
     setModalDriver(false);
     setModalUpdateDriver(false);
     onOpen();
@@ -279,6 +299,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
     setDriverInfo(namesDrivers);
     setModalUpdateDriver(true);
     setModalDriver(false);
+    setModalAllow(false);
     setModalDelete(false);
     onOpen();
   };
@@ -351,6 +372,75 @@ const TableDrivers = ({ drivers, countDriver }) => {
       error = "El número de patente es requerido";
     }
     return error;
+  };
+
+  const sendCodeVerification = async () => {
+    const pinArray = [
+      getRandomInt(10),
+      getRandomInt(10),
+      getRandomInt(10),
+      getRandomInt(10),
+    ];
+    setPinGenerate(pinArray);
+    await axios.post(`${endPoint}/sendCodeVerification/`, {
+      pinArray: pinArray,
+      user: getUser().id,
+    });
+  };
+
+  const getRandomInt = (maxNumber) => {
+    return Math.floor(Math.random() * maxNumber);
+  };
+
+  const checkCodeVerification = async (e, action) => {
+    e.preventDefault();
+    if (
+      pinGenerate[0] === parseInt(pin1) &&
+      pinGenerate[1] === parseInt(pin2) &&
+      pinGenerate[2] === parseInt(pin3) &&
+      pinGenerate[3] === parseInt(pin4)
+    ) {
+      if (action === false) {
+        const response = await axios
+          .put(`${endPoint}/updateStatusUser/`, {
+            idUser: idDriver,
+            action: 2,
+          })
+          .then(async (response) => {
+            const responseDrivers = await axios.get(`${endPoint}/driversCheckStatus/`);
+            let resultDrivers = responseDrivers.data;
+            let update = true;
+            UpdateStateDrivers(resultDrivers, update);
+          });
+        setMessageSuccess("¡Cuenta deshabilitada con éxito!");
+      } else {
+        const response = await axios
+          .put(`${endPoint}/updateStatusUser/`, {
+            idUser: idDriver,
+            action: 3,
+          })
+          .then(async (response) => {
+            const responseDrivers = await axios.get(`${endPoint}/driversCheckStatus/`);
+            let resultDrivers = responseDrivers.data;
+            let update = true;
+            UpdateStateDrivers(resultDrivers, update);
+          });
+        setMessageSuccess("¡Cuenta habilitada con éxito!");
+      }
+      setSuccessPin(true);
+      setErrorPin(false);
+      setPinGenerate([]);
+      setTimeout(() => {
+        onClose();
+        setSuccessPin(false);
+      }, "2000");
+    } else {
+      setErrorPin(true);
+      setSuccessPin(false);
+      setTimeout(() => {
+        setErrorPin(false);
+      }, "2000");
+    }
   };
 
   return (
@@ -634,7 +724,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {listDrivers.length === !0
+          {listDrivers.length !== 0
             ? listDrivers.map((row) => {
                 return (
                   <Tr key={row.id}>
@@ -702,22 +792,57 @@ const TableDrivers = ({ drivers, countDriver }) => {
                       minW={{ sm: "150px", md: "200px", lg: "auto" }}
                       borderColor="transparent"
                     >
-                      <Button
-                        w="4rem"
-                        onClick={() => modalEditDriver(row.id)}
-                        variant="brand"
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        p="1rem"
-                        onClick={() => deleteDriver(row.id)}
-                        background="#E53E3E"
-                        color="white"
-                        hover="#e53e3e8c"
-                      >
-                        Deshabilitar cuenta
-                      </Button>
+                      {row.statusDriver === 1 ? (
+                        <>
+                          <Button
+                            w="4rem"
+                            onClick={() => modalEditDriver(row.id)}
+                            variant="brand"
+                          >
+                            Editar
+                          </Button>
+                          <Tooltip
+                            hasArrow
+                            label="Deshabilitar cuenta"
+                            bg="red.600"
+                          >
+                            <Icon
+                              cursor="pointer"
+                              onClick={() => InactiveDriver(row.id)}
+                              as={LockIcon}
+                              w={8}
+                              h={8}
+                              pos="relative"
+                              ml="1rem"
+                              top="0.3rem"
+                              color="black.500"
+                            />
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          <Button w="4rem" disabled variant="brand">
+                            Editar
+                          </Button>
+                          <Tooltip
+                            hasArrow
+                            label="Habilitar cuenta"
+                            bg="green.600"
+                          >
+                            <Icon
+                              cursor="pointer"
+                              onClick={() => ActiveDriver(row.id)}
+                              as={UnlockIcon}
+                              w={8}
+                              h={8}
+                              pos="relative"
+                              ml="1rem"
+                              top="0.3rem"
+                              color="black.500"
+                            />
+                          </Tooltip>
+                        </>
+                      )}
                     </Td>
                   </Tr>
                 );
@@ -789,38 +914,57 @@ const TableDrivers = ({ drivers, countDriver }) => {
                       minW={{ sm: "150px", md: "200px", lg: "auto" }}
                       borderColor="transparent"
                     >
-                      <Button
-                        onClick={() => modalEditDriver(row.id)}
-                        variant="brand"
-                      >
-                        Editar
-                      </Button>
-                      <Tooltip
-                        hasArrow
-                        label="Deshabilitar cuenta"
-                        bg="red.600"
-                      >
-                        <Icon
-                          cursor="pointer"
-                          onClick={() => deleteDriver(row.id)}
-                          as={LockIcon}
-                          w={8}
-                          h={8}
-                          pos="relative"
-                          ml="1.4rem"
-                          top="0.3rem"
-                          color="black.500"
-                        />
-                      </Tooltip>
-                      {/* <Button
-                        p="1rem"
-                        onClick={() => deleteDriver(row.id)}
-                        background="#E53E3E"
-                        color="white"
-                        hover="#e53e3e8c"
-                      >
-                        Deshabilitar cuenta
-                      </Button> */}
+                      {row.statusDriver === 1 ? (
+                        <>
+                          <Button
+                            w="4rem"
+                            onClick={() => modalEditDriver(row.id)}
+                            variant="brand"
+                          >
+                            Editar
+                          </Button>
+                          <Tooltip
+                            hasArrow
+                            label="Deshabilitar cuenta"
+                            bg="red.600"
+                          >
+                            <Icon
+                              cursor="pointer"
+                              onClick={() => InactiveDriver(row.id)}
+                              as={LockIcon}
+                              w={8}
+                              h={8}
+                              pos="relative"
+                              ml="1rem"
+                              top="0.3rem"
+                              color="black.500"
+                            />
+                          </Tooltip>
+                        </>
+                      ) : (
+                        <>
+                          <Button w="4rem" disabled variant="brand">
+                            Editar
+                          </Button>
+                          <Tooltip
+                            hasArrow
+                            label="Habilitar cuenta"
+                            bg="green.600"
+                          >
+                            <Icon
+                              cursor="pointer"
+                              onClick={() => ActiveDriver(row.id)}
+                              as={UnlockIcon}
+                              w={8}
+                              h={8}
+                              pos="relative"
+                              ml="1rem"
+                              top="0.3rem"
+                              color="black.500"
+                            />
+                          </Tooltip>
+                        </>
+                      )}
                     </Td>
                   </Tr>
                 );
@@ -849,7 +993,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
                   enterprise: driverInfo[0].enterprise,
                   car: driverInfo[0].brand_model,
                   code: driverInfo[0].unique_code,
-                  email: driverInfo[0].email
+                  email: driverInfo[0].email,
                 }}
                 onSubmit={(values) => handleUpdateDriver(values)}
               >
@@ -979,57 +1123,160 @@ const TableDrivers = ({ drivers, countDriver }) => {
           </ModalContent>
         </Modal>
       )}
-      {modalDelete && (
+      {modalDelete ? (
         <AlertDialog
           isOpen={isOpen}
           leastDestructiveRef={cancelRef}
           onClose={onClose}
         >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Deshabilitar cuenta
-              </AlertDialogHeader>
-              <AlertDialogBody>
-                Si está seguro de esta acción debe colocar la clave de
-                confirmación de 4 dígitos.
-                <br></br>
-                <strong>
-                  Nota: Esta acción borrará todos los registros asociados al
-                  conductor y es irreversible.
-                </strong>
-                <br></br>
-                <br></br>
-                Enviar clave vía correo
-                <IconButton
-                  variant="outline"
-                  colorScheme="teal"
-                  aria-label="Send email"
-                  icon={<EmailIcon />}
-                />
-              </AlertDialogBody>
-              <Center>
-                <HStack>
-                  <PinInput type="alphanumeric">
-                    <PinInputField />
-                    <PinInputField />
-                    <PinInputField />
-                    <PinInputField />
-                  </PinInput>
-                </HStack>
-              </Center>
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancelar
-                </Button>
-                <Button colorScheme="red" onClick={onClose} ml={3}>
-                  Eliminar
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
+          <form onSubmit={(e) => checkCodeVerification(e, false)}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Deshabilitar cuenta
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                  Si está seguro de esta acción debe colocar el código de
+                  validación de 4 dígitos.
+                  <br></br>
+                  <strong>
+                    Nota: Esta acción también dejará sin conductor a los
+                    estudiantes que tenía asignado éste.
+                  </strong>
+                  <br></br>
+                  <br></br>
+                  Enviar código vía SMS (mensaje de texto)
+                  <IconButton
+                    onClick={() => sendCodeVerification()}
+                    variant="outline"
+                    colorScheme="teal"
+                    aria-label="Send email"
+                    icon={<EmailIcon />}
+                  />
+                </AlertDialogBody>
+                <Center>
+                  <HStack>
+                    <PinInput type="alphanumeric">
+                      <PinInputField
+                        onChange={(e) => setPin1(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin2(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin3(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin4(e.target.value)}
+                      />
+                    </PinInput>
+                  </HStack>
+                </Center>
+                <SlideFade startingHeight={1} in={successPin}>
+                  <Box my={4}>
+                    <Alert status="success" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      {messageSuccess}
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={errorPin}>
+                  <Box my={4}>
+                    <Alert status="error" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      ¡El pin ingresado es incorrecto, intente nuevamente!
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" colorScheme="red" ml={3}>
+                    Eliminar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </form>
         </AlertDialog>
-      )}
+      ) : modalAllow ? (
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <form onSubmit={(e) => checkCodeVerification(e, true)}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Habilitar cuenta
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                  Si está seguro de esta acción debe colocar el código de
+                  validación de 4 dígitos.
+                  <br></br>
+                  <strong>
+                    Nota: Esta acción habilitará la cuenta del conductor.
+                  </strong>
+                  <br></br>
+                  <br></br>
+                  Enviar código vía SMS (mensaje de texto)
+                  <IconButton
+                    onClick={() => sendCodeVerification()}
+                    variant="outline"
+                    colorScheme="teal"
+                    aria-label="Send email"
+                    icon={<EmailIcon />}
+                  />
+                </AlertDialogBody>
+                <Center>
+                  <HStack>
+                    <PinInput type="alphanumeric">
+                      <PinInputField
+                        onChange={(e) => setPin1(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin2(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin3(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin4(e.target.value)}
+                      />
+                    </PinInput>
+                  </HStack>
+                </Center>
+                <SlideFade startingHeight={1} in={successPin}>
+                  <Box my={4}>
+                    <Alert status="success" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      {messageSuccess}
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={errorPin}>
+                  <Box my={4}>
+                    <Alert status="error" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      ¡El pin ingresado es incorrecto, intente nuevamente!
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" colorScheme="green" ml={3}>
+                    Habilitar cuenta
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </form>
+        </AlertDialog>
+      ) : null}
     </Card>
   );
   // <Table variant="simple" color={textColor}>

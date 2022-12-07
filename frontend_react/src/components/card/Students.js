@@ -175,7 +175,7 @@ export default function Students(props) {
   const dataStudents = useMemo(() => [...students], [students]);
 
   const getListDrivers = async (event) => {
-    const response = await axios.get(`${endPoint}/drivers/`);
+    const response = await axios.get(`${endPoint}/driversCheckStatus/`);
     let count = 0;
     setDrivers(response.data);
     let result = response.data;

@@ -659,7 +659,7 @@ export default function TravelPlanning(props) {
               <ModalHeader>Solicitud de Viaje</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <Accordion defaultIndex={[0]} allowMultiple>
+                {/* <Accordion defaultIndex={[0]} allowMultiple>
                   <AccordionItem>
                     <h2>
                       <AccordionButton
@@ -689,10 +689,9 @@ export default function TravelPlanning(props) {
                         )
                       )}
                   </AccordionItem>
-                </Accordion>
+                </Accordion> */}
                 <br></br>
-
-                <FormLabel as="legend">Fecha de viaje</FormLabel>
+                <FormLabel style={{fontSize:"1.2rem"}} as="legend">Fecha de viaje</FormLabel>
                 <br></br>
                 <Center>
                   <Calendar
@@ -748,7 +747,7 @@ export default function TravelPlanning(props) {
                   </>
                 ) : null}
                 <br></br>
-                <FormLabel as="legend">
+                <FormLabel style={{fontSize:"1.2rem"}} as="legend">
                   <Icon w="25px" h="25px" as={FaRoute} color={brandColor} />
                   Tipo de viaje
                 </FormLabel>

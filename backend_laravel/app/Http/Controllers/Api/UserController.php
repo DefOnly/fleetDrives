@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Agent;
 use App\Models\Driver;
 use App\Models\Van;
+use Twilio\Rest\Client;
 
 class UserController extends Controller
 {
@@ -24,6 +25,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 1)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Kinder') {
@@ -31,6 +33,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 2)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Primero Básico') {
@@ -38,6 +41,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 3)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Segundo Básico') {
@@ -45,6 +49,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 4)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Tercero Básico') {
@@ -52,6 +57,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 5)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Cuarto Básico') {
@@ -59,6 +65,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 6)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Quinto Básico') {
@@ -66,6 +73,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 7)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Sexto Básico') {
@@ -73,6 +81,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 8)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Séptimo Básico') {
@@ -80,6 +89,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 9)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         } else if ($course == 'Octavo Básico') {
@@ -87,6 +97,7 @@ class UserController extends Controller
                 ->join('drivers', 'drivers.id', '=', 'users.id_driver')
                 ->where('users.id_profile', '=', 2)
                 ->where('users.id_level', '=', 10)
+                // ->where('users.status', '=', 1)
                 ->get();
             return $students;
         }
@@ -99,6 +110,15 @@ class UserController extends Controller
     }
 
     public function getAllDrivers()
+    {
+        $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand_model', 'unique_code', 'statusDriver')
+            ->join('vans', 'vans.id', '=', 'drivers.id_van')
+            ->where('drivers.id', '!=', 6)
+            ->where('statusDriver', 1)
+            ->get();
+        return $drivers;
+    }
+    public function driversCheckStatus()
     {
         $drivers = Driver::select('drivers.id', 'rutDriver', 'nameDriver', 'lastNameDP', 'lastNameDM', 'enterprise', 'email', 'brand_model', 'unique_code', 'statusDriver')
             ->join('vans', 'vans.id', '=', 'drivers.id_van')
@@ -141,12 +161,13 @@ class UserController extends Controller
             'id_province',
             'gender',
             'users.email',
+            'users.phone',
             'id_driver',
             'nameDriver',
             'lastNameDP',
             'lastNameDM',
             'nameAgent',
-            'phone',
+            'agents.phone',
             'email_agent'
         )
             ->join('provinces', 'provinces.id', '=', 'users.id_province')
@@ -185,6 +206,7 @@ class UserController extends Controller
             ->join('levels', 'levels.id', '=', 'users.id_level')
             ->where('users.id_driver', '=', $idDriver)
             ->where('users.id_profile', '=', 2)
+            ->where('users.status', '=', 1)
             ->get();
         $objArray = json_decode($driver_student);
         $newArray = array();
@@ -193,6 +215,56 @@ class UserController extends Controller
             $newArray[] = $value;
         }
         return $newArray;
+    }
+
+    public function sendCodeVerification(Request $request)
+    {
+        $pinArray = $request->pinArray;
+        $user = $request->user;
+        $getPhoneUserAdmin = User::select('phone')->where('id', '=', $user)->get();
+        try {
+            $account_sid = getenv("TWILIO_SID");
+            $auth_token = getenv("TWILIO_AUTH_TOKEN");
+            $twilio_number = getenv("TWILIO_NUMBER");
+            $client = new Client($account_sid, $auth_token);
+            $client->messages->create('+56' . $getPhoneUserAdmin[0]->phone, ['from' => $twilio_number, 'body' => 'fleetDrives: Su código de validación es:' . " " . implode("", $pinArray)]);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function updateStatusUser(Request $request)
+    {
+        $action = $request->action;
+        $idUser = $request->idUser;
+        if ($action == 0) {
+            User::where('id', $idUser)->update([
+                'status' => 0, //Estudiante Inhabilitado
+                'id_driver' => 6
+            ]);
+            return true;
+        } else if ($action == 1) {
+            User::where('id', $idUser)->update([
+                'status' => 1, //Estudiante Habilitado
+            ]);
+            return true;
+        } else if ($action == 2) {
+            Driver::where('id', $idUser)->update([
+                'statusDriver' => 0, //Conductor Inhabilitado
+            ]);
+            $changeToDefaultDriver = User::select('*')->where('id_driver', $idUser)->get()->toArray();
+            foreach ($changeToDefaultDriver as $idDriver) {
+                User::where('id_driver', $idUser)->update([
+                    'id_driver' => 6,
+                ]);
+            }
+            return true;
+        } else {
+            Driver::where('id', $idUser)->update([
+                'statusDriver' => 1, //Conductor Habilitado
+            ]);
+            return true;
+        }
     }
 
     public function AddStudentParvulo(Request $request)
@@ -343,7 +415,10 @@ class UserController extends Controller
 
     public function driversCount()
     {
-        $count = Driver::where('drivers.id', "!=", 6)->count();
+        $count = Driver::select('id', 'statusDriver')
+            ->where('id', "!=", 6)
+            ->where('statusDriver', 1)
+            ->count();
         return $count;
     }
 

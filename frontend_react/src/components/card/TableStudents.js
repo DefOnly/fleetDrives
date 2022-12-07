@@ -75,6 +75,7 @@ import {
   ChevronLeftIcon,
   EmailIcon,
 } from "@chakra-ui/icons";
+import AuthUser from "views/auth/signIn/AuthUser";
 
 const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   const textColor = useColorModeValue("gray.700", "white");
@@ -93,9 +94,20 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   const [error, setError] = useState(false);
   const [show, setShow] = useState(false);
   // const [modalDriver, setModalDriver] = useState(false);
+  const [modalAllow, setModalAllow] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   // const { register, handleSubmit, watch, formState: { errors } } = useForm();
   let countStudents = 1;
+  const [pin1, setPin1] = useState([]);
+  const [pin2, setPin2] = useState([]);
+  const [pin3, setPin3] = useState([]);
+  const [pin4, setPin4] = useState([]);
+  const [pinGenerate, setPinGenerate] = useState([]);
+  const { getUser } = AuthUser();
+  const [successPin, setSuccessPin] = useState(false);
+  const [errorPin, setErrorPin] = useState(false);
+  const [idStudent, setIdStudent] = useState([]);
+  const [messageSuccess, setMessageSuccess] = useState("");
   // const [input, setInput] = useState("");
   // const handleInputChange = (e) => setInput(e.target.value);
 
@@ -145,7 +157,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
     setStudentInfo(response.data);
     setCurrentDriver(response.data[0].id_driver);
     setIsShown(true);
-    // setModalDriver(false);
+    setModalAllow(false);
     setModalDelete(false);
     setFormValues(response.data);
     onOpen();
@@ -184,13 +196,19 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   //   // }
   // }, [drivers])
 
-  const deleteStudent = async (event, idStudent) => {
-    // const response = await axios.get(`${endPoint}/drivers/`);
-    // setDrivers(response.data);
-    // setCurrentDriver(idDriver);
-    setModalDelete(true);
+  const AllowStudent = (idStudent) => {
+    setIdStudent(idStudent);
+    setModalAllow(true);
+    setModalDelete(false);
     setIsShown(false);
-    // setModalDriver(false);
+    onOpen();
+  };
+
+  const deleteStudent = (idStudent) => {
+    setIdStudent(idStudent);
+    setModalDelete(true);
+    setModalAllow(false);
+    setIsShown(false);
     onOpen();
   };
 
@@ -243,7 +261,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
             `${endPoint}/students/${course}/`
           );
           let students = showUpdateStudents.data;
-          UpdateStateStudents(students, resultArray[10]);
+          UpdateStateStudents(students);
         });
     } else {
       setError(true);
@@ -272,7 +290,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   };
 
   const UpdateStateStudents = useCallback(
-    (students, id_level) => {
+    (students) => {
       let arrayStudents = [];
       let arrayDrivers = [];
       let result = students;
@@ -333,7 +351,23 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
               {row.values.status === 1 ? (
                 <Badge colorScheme="green">Activo</Badge>
               ) : (
-                <Badge colorScheme="red">Inactivo</Badge>
+                <div
+                  style={{
+                    float: "left",
+                    display: "grid",
+                    gap: "0.5rem",
+                    justifyItems: "center",
+                    width: "10rem",
+                  }}
+                >
+                  <Badge colorScheme="red">Inactivo</Badge>
+                  <Button
+                    colorScheme="whatsapp"
+                    onClick={() => AllowStudent(row.values.id)}
+                  >
+                    Habilitar estudiante
+                  </Button>
+                </div>
               )}
             </Stack>
           </>
@@ -344,43 +378,38 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
         Header: "Opciones",
         Cell: ({ row }) => (
           <>
-            <Button
-              onClick={(event) => getInfoStudent(event, row.values.id)}
-              variant="brand"
-            >
-              Editar
-            </Button>
-            {/* {row.values.id_driver === 6 ? (
-              <Button
-                background="#9AE6B4"
-                color="white"
-                hover="#9ae6b469"
-                onClick={(event) => getAllDrivers(event, 6, row.values.id)}
-                variant="brand"
-              >
-                Asignar conductor
-              </Button>
+            {row.values.status === 1 ? (
+              <>
+                <Button
+                  onClick={(event) => getInfoStudent(event, row.values.id)}
+                  variant="brand"
+                >
+                  Editar
+                </Button>
+                <Button
+                  background="#E53E3E"
+                  color="white"
+                  hover="#e53e3e8c"
+                  onClick={() => deleteStudent(row.values.id)}
+                >
+                  Eliminar
+                </Button>
+              </>
             ) : (
-              <Button
-                background="#9AE6B4"
-                color="white"
-                hover="#9ae6b469"
-                onClick={(event) =>
-                  getAllDrivers(event, row.values.id_driver, row.values.id)
-                }
-                variant="brand"
-              >
-                Reasignar conductor
-              </Button>
-            )} */}
-            <Button
-              background="#E53E3E"
-              color="white"
-              hover="#e53e3e8c"
-              onClick={(event) => deleteStudent(event, row.values.id)}
-            >
-              Eliminar
-            </Button>
+              <>
+                <Button disabled variant="brand">
+                  Editar
+                </Button>
+                <Button
+                  background="#E53E3E"
+                  color="white"
+                  hover="#e53e3e8c"
+                  disabled
+                >
+                  Eliminar
+                </Button>
+              </>
+            )}
           </>
         ),
       },
@@ -426,6 +455,73 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
 
   const count = preGlobalFilteredRows.length;
   const [value, setValue] = useState(globalFilter);
+
+  const sendCodeVerification = async () => {
+    const pinArray = [
+      getRandomInt(10),
+      getRandomInt(10),
+      getRandomInt(10),
+      getRandomInt(10),
+    ];
+    setPinGenerate(pinArray);
+    await axios.post(`${endPoint}/sendCodeVerification/`, {
+      pinArray: pinArray,
+      user: getUser().id,
+    });
+  };
+
+  const getRandomInt = (maxNumber) => {
+    return Math.floor(Math.random() * maxNumber);
+  };
+
+  const checkCodeVerification = async (e, action) => {
+    e.preventDefault();
+    if (
+      pinGenerate[0] === parseInt(pin1) &&
+      pinGenerate[1] === parseInt(pin2) &&
+      pinGenerate[2] === parseInt(pin3) &&
+      pinGenerate[3] === parseInt(pin4)
+    ) {
+      if (action === false) {
+        const response = await axios.put(`${endPoint}/updateStatusUser/`, {
+          idUser: idStudent,
+          action: 0,
+        }).then(async (response) => {
+          const showUpdateStudents = await axios.get(
+            `${endPoint}/students/${course}/`
+          );
+          let students = showUpdateStudents.data;
+          UpdateStateStudents(students);
+        });
+        setMessageSuccess("¡Estudiante Eliminado!");
+      } else {
+        const response = await axios.put(`${endPoint}/updateStatusUser/`, {
+          idUser: idStudent,
+          action: 1,
+        }).then(async (response) => {
+          const showUpdateStudents = await axios.get(
+            `${endPoint}/students/${course}/`
+          );
+          let students = showUpdateStudents.data;
+          UpdateStateStudents(students);
+        });
+        setMessageSuccess("¡Estudiante Habilitado!");
+      }
+      setSuccessPin(true);
+      setErrorPin(false);
+      setPinGenerate([]);
+      setTimeout(() => {
+        onClose();
+        setSuccessPin(false);
+      }, "2000");
+    } else {
+      setErrorPin(true);
+      setSuccessPin(false);
+      setTimeout(() => {
+        setErrorPin(false);
+      }, "2000");
+    }
+  };
 
   return (
     <Card
@@ -1379,7 +1475,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
                 </SlideFade>
               )}
               <ModalFooter>
-                <Button type="submit" colorScheme="blue" mr={3}>
+                <Button type="submit" colorScheme="green" mr={3}>
                   Guardar cambios
                 </Button>
                 <Button onClick={onClose}>Cerrar</Button>
@@ -1389,57 +1485,161 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
         </Modal>
       )}
       {/* Modal eliminar estudiante */}
-      {modalDelete && (
+      {modalDelete ? (
         <AlertDialog
           isOpen={isOpen}
           leastDestructiveRef={cancelRef}
           onClose={onClose}
         >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Eliminar Estudiante
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Si está seguro de esta acción debe colocar la clave de
-                confirmación de 4 dígitos.
-                <br></br>
-                <strong>
-                  Nota: Esta acción borrará todos los registros asociados al
-                  estudiante y es irreversible.
-                </strong>
-                <br></br><br></br>
-                Enviar clave vía correo
-                <IconButton
-                  variant="outline"
-                  colorScheme="teal"
-                  aria-label="Send email"
-                  icon={<EmailIcon />}
-                />
-              </AlertDialogBody>
-              <Center>
-                <HStack>
-                  <PinInput type="alphanumeric">
-                    <PinInputField />
-                    <PinInputField />
-                    <PinInputField />
-                    <PinInputField />
-                  </PinInput>
-                </HStack>
-              </Center>
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancelar
-                </Button>
-                <Button colorScheme="red" onClick={onClose} ml={3}>
-                  Eliminar
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
+          <form onSubmit={(e) => checkCodeVerification(e, false)}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Eliminar Estudiante
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                  Si está seguro de esta acción debe colocar el código de
+                  validación de 4 dígitos.
+                  <br></br>
+                  <strong>
+                    Nota: Esta acción dejará al estudiante eliminado
+                    para el conductor que tiene asignado.
+                  </strong>
+                  <br></br>
+                  <br></br>
+                  Enviar código vía SMS (mensaje de texto)
+                  <IconButton
+                    onClick={() => sendCodeVerification()}
+                    variant="outline"
+                    colorScheme="teal"
+                    aria-label="Send email"
+                    icon={<EmailIcon />}
+                  />
+                </AlertDialogBody>
+                <Center>
+                  <HStack>
+                    <PinInput type="alphanumeric">
+                      <PinInputField
+                        onChange={(e) => setPin1(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin2(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin3(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin4(e.target.value)}
+                      />
+                    </PinInput>
+                  </HStack>
+                </Center>
+                <SlideFade startingHeight={1} in={successPin}>
+                  <Box my={4}>
+                    <Alert status="success" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      {messageSuccess}
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={errorPin}>
+                  <Box my={4}>
+                    <Alert status="error" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      ¡El pin ingresado es incorrecto, intente nuevamente!
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" colorScheme="red" ml={3}>
+                    Eliminar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </form>
         </AlertDialog>
-      )}
+      ) : modalAllow ? (
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <form onSubmit={(e) => checkCodeVerification(e, true)}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Habilitar Estudiante
+                </AlertDialogHeader>
+                <AlertDialogBody>
+                  Si está seguro de esta acción debe colocar el código de
+                  validación de 4 dígitos.
+                  <br></br>
+                  <strong>
+                    Nota: Esta acción habilitará al estudiante y deberá
+                    asignarle un conductor.
+                  </strong>
+                  <br></br>
+                  <br></br>
+                  Enviar código vía SMS (mensaje de texto)
+                  <IconButton
+                    onClick={() => sendCodeVerification()}
+                    variant="outline"
+                    colorScheme="teal"
+                    aria-label="Send email"
+                    icon={<EmailIcon />}
+                  />
+                </AlertDialogBody>
+                <Center>
+                  <HStack>
+                    <PinInput type="alphanumeric">
+                      <PinInputField
+                        onChange={(e) => setPin1(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin2(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin3(e.target.value)}
+                      />
+                      <PinInputField
+                        onChange={(e) => setPin4(e.target.value)}
+                      />
+                    </PinInput>
+                  </HStack>
+                </Center>
+                <SlideFade startingHeight={1} in={successPin}>
+                  <Box my={4}>
+                    <Alert status="success" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      {messageSuccess}
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={errorPin}>
+                  <Box my={4}>
+                    <Alert status="error" variant="solid" borderRadius={4}>
+                      <AlertIcon />
+                      ¡El pin ingresado es incorrecto, intente nuevamente!
+                    </Alert>
+                  </Box>
+                </SlideFade>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" colorScheme="green" ml={3}>
+                    Habilitar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </form>
+        </AlertDialog>
+      ) : null}
     </Card>
   );
   // <Table variant="simple" color={textColor}>

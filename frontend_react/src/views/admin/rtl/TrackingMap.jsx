@@ -119,7 +119,6 @@ export default function TrackingMap() {
   const locationOrigin = () => {
     // if (!isMapReady) throw new Error("Mapa no está listo");
     if (!userLocation) throw new Error("No está definida una ubicación");
-    console.log(map)
     map?.flyTo({
       zoom: 16,
       center: userLocation,
@@ -160,7 +159,7 @@ export default function TrackingMap() {
           position: "fixed",
           top: "140px",
           right: "20px",
-          zIndex: "999",
+          // zIndex: "1",
           color: "white",
         }}
         colorScheme="cyan"
