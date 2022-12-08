@@ -24,11 +24,17 @@
 import {
   Avatar,
   Box,
+  Text,
   Flex,
   FormLabel,
   Icon,
   Select,
   SimpleGrid,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
+  AlertDescription,
   useColorModeValue,
 } from "@chakra-ui/react";
 // Assets
@@ -68,6 +74,7 @@ export default function TrackingMap() {
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
   const [isLoading, setIsLoading] = useState(false);
   const { userLocation } = useContext(PlacesContext);
+  const textColor = useColorModeValue("secondaryGray.900", "white");
 
   console.log(userLocation);
 
@@ -86,7 +93,9 @@ export default function TrackingMap() {
         <Spinner size="xl" />
       </Box>
     );
-  }
+    }
+ let dato = JSON.parse(localStorage.user);
+ if (dato.status == "1") {
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <div> HOLA {userLocation?.join(",")}</div>
@@ -194,5 +203,34 @@ export default function TrackingMap() {
           </SimpleGrid>
         </SimpleGrid> */}
     </Box>
-  );
-}
+        );
+
+    }
+    else {
+        return (
+         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
+            <Alert
+                    status='error'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='150px'
+                >
+                    <AlertIcon boxSize='40px' mr={0} alignItems='center' />
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        ACCESO RESTRINGIDO!
+                       </AlertTitle>
+                    <AlertDescription maxWidth='sm'>
+                        Este modulo esta disponible solo para el usuario Administrador.
+                     </AlertDescription>
+
+                </Alert>
+
+            </Box>
+        );
+
+    }
+};
+

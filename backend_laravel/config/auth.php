@@ -35,10 +35,21 @@ return [
     |
     */
 
-    'guards' => [
+   'guards' => [
+
+      'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',
+        ],
+
+        'api2' => [
+            'driver' => 'jwt',
+            'provider' => 'drivers',
         ],
     ],
 
@@ -58,11 +69,15 @@ return [
     | Supported: "database", "eloquent"
     |
     */
-
-    'providers' => [
+ 'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Driver::class,
         ],
 
         // 'users' => [
