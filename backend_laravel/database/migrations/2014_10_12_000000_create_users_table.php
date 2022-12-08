@@ -39,6 +39,7 @@ class CreateUsersTable extends Migration
             $table->string('lastNameP');
             $table->string('lastNameM');
             $table->string('email')->nullable();
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('gender');
@@ -47,7 +48,7 @@ class CreateUsersTable extends Migration
             $table->integer('id_level');
             $table->string('zone')->nullable();
             $table->string('address')->nullable();
-            $table->integer('coordinates')->nullable();
+            $table->integer('id_coordinates')->nullable();
             $table->integer('id_agent');
             $table->integer('id_province');
             $table->foreignId('id_driver')

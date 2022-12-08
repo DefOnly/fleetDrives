@@ -91,6 +91,7 @@ class TravelController extends Controller
             'lastNameDP',
             'lastNameDM',
             'enterprise',
+            // 'statusDriver',
             'brand_model',
             'unique_code',
             'travels.id as idTravel',
@@ -99,6 +100,7 @@ class TravelController extends Controller
             ->join('vans', 'vans.id', '=', 'drivers.id_van')
             ->leftJoin('travels', 'travels.id_driver', '=', 'drivers.id')
             ->where('drivers.id', '!=', 6)
+            ->where('statusDriver', 1)
             ->get();
         return $drivers;
     }

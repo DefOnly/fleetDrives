@@ -34,6 +34,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::get('getAllUsers',  [UserController::class, 'getAllUsers']);
     Route::get('getStudents',  [UserController::class, 'getAllStudents']);
     Route::get('drivers',  [UserController::class, 'getAllDrivers']);
+    Route::get('driversCheckStatus',  [UserController::class, 'driversCheckStatus']);
     Route::post('AddStudentParvulo',  [UserController::class, 'AddStudentParvulo']);
     Route::post('AddStudentBasica',  [UserController::class, 'AddStudentBasica']);
     Route::post('AddDriver',  [UserController::class, 'AddDriver']);
@@ -46,6 +47,8 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::get('driversCount',  [UserController::class, 'driversCount']);
     Route::get('getNumberStudents',  [UserController::class, 'getNumberStudents']);
     Route::get('driverStudent/{idDriver}',  [UserController::class, 'driverStudent']);
+    Route::post('sendCodeVerification',  [UserController::class, 'sendCodeVerification']);
+    Route::put('updateStatusUser',  [UserController::class, 'updateStatusUser']);
     // Módulo de planificación de viajes
     Route::post('AddDateTimeTravel',  [TravelController::class, 'AddDateTimeTravel']);
     Route::post('AddDateTravel',  [TravelController::class, 'AddDateTravel']);

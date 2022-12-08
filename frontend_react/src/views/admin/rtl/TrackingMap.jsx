@@ -36,6 +36,8 @@ import {
   CloseButton,
   AlertDescription,
   useColorModeValue,
+  Button,
+  Input,
 } from "@chakra-ui/react";
 // Assets
 import Usa from "assets/img/dashboards/usa.png";
@@ -63,25 +65,51 @@ import {
 } from "views/admin/default/variables/columnsData";
 import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
 import tableDataComplex from "views/admin/default/variables/tableDataComplex.json";
-import { useContext } from "react";
-import { PlacesProvider } from "contexts/places/PlacesContext";
+import { useContext, useRef, useLayoutEffect } from "react";
 import { PlacesContext } from "contexts/places/PlacesContext";
+import { MapContext } from "contexts/map/MapContext";
 import { Spinner } from "@chakra-ui/react";
+import { Map, Marker, Popup } from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function TrackingMap() {
   // Chakra Color Mode
   const brandColor = useColorModeValue("brand.500", "white");
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { userLocation } = useContext(PlacesContext);
   const textColor = useColorModeValue("secondaryGray.900", "white");
-
-  console.log(userLocation);
+  const [ map, setMap ] = useState({});
+  const [lng, setLng] = useState(-72.2102512582304);
+  const [lat, setLat] = useState(-40.318831740868504);
+  const [zoom, setZoom] = useState(16);
+  const debounceRef = useRef();
 
   if (!navigator.geolocation) {
     alert("El navegador no tiene opción de geolocalización");
     throw new Error("El navegador no tiene opción de geolocalización");
   }
+
+  useLayoutEffect(() => {
+    setIsLoading(false);
+    if (!isLoading) {
+      const map = new Map({
+        container: "mapDiv", // container ID
+        style: "mapbox://styles/mapbox/streets-v12", // style URL
+        center: userLocation, // starting position [lng, lat]
+        zoom: zoom, // starting zoom
+      });
+      const collegeLocationPopUp = new Popup().setHTML(
+        `<img src="https://www.diariofutrono.cl/files/62957cb21d73f_890x533.webp" width="500" height="600">
+        <h4 style="text-align: center"><strong>Escuela Rural Riñinahue</strong></h4>`
+      );
+      const collegeMarker = new Marker({ color: "#422afb" })
+        .setLngLat([lng, lat])
+        .setPopup(collegeLocationPopUp)
+        .addTo(map);
+      setMap(map);
+    }
+  }, [lng, lat, zoom, userLocation, isLoading]);
 
   // if (userLocation === undefined) {
   //   setIsLoading(true);
@@ -94,119 +122,60 @@ export default function TrackingMap() {
       </Box>
     );
     }
+     const locationOrigin = () => {
+    // if (!isMapReady) throw new Error("Mapa no está listo");
+    if (!userLocation) throw new Error("No está definida una ubicación");
+    map?.flyTo({
+      zoom: 16,
+      center: userLocation,
+    });
+  };
+
+  const onQueryChange = (event) => {
+    
+  };
  let dato = JSON.parse(localStorage.user);
  if (dato.status == "1") {
-  return (
+   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-      <div> HOLA {userLocation?.join(",")}</div>
-      {/* <SimpleGrid
-          columns={{ base: 1, md: 2, lg: 3, "2xl": 6 }}
-          gap='20px'
-          mb='20px'>
-          <MiniStatistics
-            startContent={
-              <IconBox
-                w='56px'
-                h='56px'
-                bg={boxBg}
-                icon={
-                  <Icon w='32px' h='32px' as={MdBarChart} color={brandColor} />
-                }
-              />
-            }
-            name='Earnings'
-            value='$350.4'
-          />
-          <MiniStatistics
-            startContent={
-              <IconBox
-                w='56px'
-                h='56px'
-                bg={boxBg}
-                icon={
-                  <Icon w='32px' h='32px' as={MdAttachMoney} color={brandColor} />
-                }
-              />
-            }
-            name='Spend this month'
-            value='$642.39'
-          />
-          <MiniStatistics growth='+23%' name='Sales' value='$574.34' />
-          <MiniStatistics
-            endContent={
-              <Flex me='-16px' mt='10px'>
-                <FormLabel htmlFor='balance'>
-                  <Avatar src={Usa} />
-                </FormLabel>
-                <Select
-                  id='balance'
-                  variant='mini'
-                  mt='5px'
-                  me='0px'
-                  defaultValue='usd'>
-                  <option value='usd'>USD</option>
-                  <option value='eur'>EUR</option>
-                  <option value='gba'>GBA</option>
-                </Select>
-              </Flex>
-            }
-            name='Your balance'
-            value='$1,000'
-          />
-          <MiniStatistics
-            startContent={
-              <IconBox
-                w='56px'
-                h='56px'
-                bg='linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)'
-                icon={<Icon w='28px' h='28px' as={MdAddTask} color='white' />}
-              />
-            }
-            name='New Tasks'
-            value='154'
-          />
-          <MiniStatistics
-            startContent={
-              <IconBox
-                w='56px'
-                h='56px'
-                bg={boxBg}
-                icon={
-                  <Icon w='32px' h='32px' as={MdFileCopy} color={brandColor} />
-                }
-              />
-            }
-            name='Total Projects'
-            value='2935'
-          />
-        </SimpleGrid>
-  
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px'>
-          <TotalSpent />
-          <WeeklyRevenue />
-        </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
-          <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
-          <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-            <DailyTraffic />
-            <PieCard />
-          </SimpleGrid>
-        </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
-          <ComplexTable
-            columnsData={columnsDataComplex}
-            tableData={tableDataComplex}
-          />
-          <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-            <Tasks />
-            <MiniCalendar h='100%' minW='100%' selectRange={false} />
-          </SimpleGrid>
-        </SimpleGrid> */}
+      <div
+        id="mapDiv"
+        style={{
+          height: "70vh",
+          right: "0",
+          position: "fixed",
+          bottom: "10rem",
+          width: "83vw",
+        }}
+      >
+        <Input
+          htmlSize={4}
+          width="250px"
+          position="fixed"
+          top="9rem"
+          left="20rem"
+          backgroundColor="white"
+          zIndex="999"
+          placeholder="Lugares"
+          onChange={onQueryChange}
+        />
+      </div>
+      <Button
+        onClick={locationOrigin}
+        style={{
+          position: "fixed",
+          top: "140px",
+          right: "20px",
+          // zIndex: "1",
+          color: "white",
+        }}
+        colorScheme="cyan"
+      >
+        Escuela Rural Riñinahue
+      </Button>
     </Box>
         );
-
-    }
-    else {
+    } else {
         return (
          <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
             <Alert

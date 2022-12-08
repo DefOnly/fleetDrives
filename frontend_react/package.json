@@ -24,6 +24,7 @@
     "babel-register": "^6.26.0",
     "formik": "^2.2.9",
     "framer-motion": "^4.1.17",
+    "mapbox-gl": "^2.11.0",
     "react": "17.0.2",
     "react-apexcharts": "^1.4.0",
     "react-calendar": "^3.7.0",

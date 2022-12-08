@@ -11,13 +11,13 @@ const INITIAL_STATE = {
 
 const PlacesAction = {
   setUserLocation: "setUserLocation",
-  payload: [-40.318720534573906, -72.21028681882603]
+  payload: [-72.2102512582304, -40.318831740868504] 
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case PlacesAction.setUserLocation:
-      return { ...state, idLoading: false, userLocation: action.payload };
+      return { ...state, isLoading: false, userLocation: action.payload };
     default:
       return state;
   }
@@ -27,8 +27,9 @@ export const PlacesProvider = ({ children }) => {
   const [placesState, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   useEffect(() => {
+    const map = PlacesAction.payload;
     // getUserLocation().then(lngLat => dispatch({ type: PlacesAction.setUserLocation, payload: PlacesAction.payload = lngLat }))
-    dispatch({ type: PlacesAction.setUserLocation, payload: PlacesAction.payload})
+    dispatch({ type: PlacesAction.setUserLocation, payload: map})
   }, []);
 
   return (
