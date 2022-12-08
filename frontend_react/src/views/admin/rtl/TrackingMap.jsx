@@ -24,11 +24,17 @@
 import {
   Avatar,
   Box,
+  Text,
   Flex,
   FormLabel,
   Icon,
   Select,
   SimpleGrid,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
+  AlertDescription,
   useColorModeValue,
   Button,
   Input,
@@ -72,6 +78,7 @@ export default function TrackingMap() {
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
   const [isLoading, setIsLoading] = useState(true);
   const { userLocation } = useContext(PlacesContext);
+  const textColor = useColorModeValue("secondaryGray.900", "white");
   const [ map, setMap ] = useState({});
   const [lng, setLng] = useState(-72.2102512582304);
   const [lat, setLat] = useState(-40.318831740868504);
@@ -114,9 +121,8 @@ export default function TrackingMap() {
         <Spinner size="xl" />
       </Box>
     );
-  }
-
-  const locationOrigin = () => {
+    }
+     const locationOrigin = () => {
     // if (!isMapReady) throw new Error("Mapa no está listo");
     if (!userLocation) throw new Error("No está definida una ubicación");
     map?.flyTo({
@@ -128,8 +134,9 @@ export default function TrackingMap() {
   const onQueryChange = (event) => {
     
   };
-
-  return (
+ let dato = JSON.parse(localStorage.user);
+ if (dato.status == "1") {
+   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <div
         id="mapDiv"
@@ -167,5 +174,32 @@ export default function TrackingMap() {
         Escuela Rural Riñinahue
       </Button>
     </Box>
-  );
-}
+        );
+    } else {
+        return (
+         <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
+            <Alert
+                    status='error'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='150px'
+                >
+                    <AlertIcon boxSize='40px' mr={0} alignItems='center' />
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        ACCESO RESTRINGIDO!
+                       </AlertTitle>
+                    <AlertDescription maxWidth='sm'>
+                        Este modulo esta disponible solo para el usuario Administrador.
+                     </AlertDescription>
+
+                </Alert>
+
+            </Box>
+        );
+
+    }
+};
+

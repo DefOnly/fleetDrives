@@ -31,6 +31,11 @@ import {
   Link,
   Text,
   useColorModeValue,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
+  AlertDescription,
   SimpleGrid,
 } from "@chakra-ui/react";
 
@@ -40,6 +45,9 @@ import {
 import HistoryItem from "views/admin/marketplace/components/HistoryItem";
 import Students from "components/card/Students";
 import Card from "components/card/Card.js";
+import AuthUser from "views/auth/signIn/AuthUser";
+import axios from "axios";
+import { useState, useCallback } from "react";
 
 // Assets
 import Nft1 from "assets/img/avatars/parvulo.jpg";
@@ -58,30 +66,104 @@ import { tableColumnsTopCreators } from "views/admin/marketplace/variables/table
 export default function Marketplace() {
   // Chakra Color Mode
   const textColor = useColorModeValue("secondaryGray.900", "white");
-  const textColorBrand = useColorModeValue("brand.500", "white");
-  return (
-    <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-      {/* Main Fields */}
-      <Grid
-        mb='20px'
-        gridTemplateColumns={{ xl: "repeat(3, 1fr)", "2xl": "1fr 0.46fr" }}
-        gap={{ base: "20px", xl: "20px" }}
-        display={{ base: "block", xl: "grid" }}>
-        <Flex
-          flexDirection='column'
-          gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}>
-          {/* <Banner /> */}
-          <Flex direction='column'>
-            <Flex
-              mt='45px'
-              mb='20px'
-              justifyContent='space-between'
-              direction={{ base: "column", md: "row" }}
-              align={{ base: "start", md: "center" }}>
-              <Text color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
-                ESTUDIANTES - NIVELES
+    const textColorBrand = useColorModeValue("brand.500", "white");
+    const endPoint = "http://localhost:8000/api";
+    //const { getUser } = AuthUser();
+    const getUser = () => {
+        const userString = localStorage.getItem('user');
+        const userDetail = JSON.parse(userString);
+        return userDetail;
+    }
+
+    
+
+ //  /*
+    //
+    const handleDriver = async (values) => {
+       // Object.assign(values, { rut: formValues.rutDriver });
+        const response = await axios.get(`${endPoint}/drivers/`);
+        let drivers = response.data;
+        let status = drivers.statusDrier;
+        let arrayDrivers = [];
+        drivers.map((row) => {
+             arrayDrivers.push(
+                row.rutDriver + " " + row.statusDriver+ " "
+            );
+            return drivers;
+        });
+
+      //  let duplicateRut = checkDuplicateRut(users, rut);
+      //  console.log(values);
+      /*  if (duplicateRut.length > 0) {
+            setRutError(true);
+            setSuccess(false);
+            setError(false);
+            setShow(true);
+        } else if (
+            values.rut === "" ||
+            values.name === "" ||
+            values.lastNameP === "" ||
+            values.lastNameM === "" ||
+            values.enterprise === "" ||
+            values.car === "" ||
+            values.code === ""
+        ) {
+            setError(true);
+            setSuccess(false);
+            setRutError(false);
+            setShow(true);
+        } else {
+            await axios.post(`${endPoint}/AddDriver/`, {
+                rut: values.rut,
+                nameDriver: values.name,
+                lastNameP: values.lastNameP,
+                lastNameM: values.lastNameM,
+                enterprise: values.enterprise,
+                car: values.car,
+                code: values.code,
+            });
+            const responseDrivers = await axios.get(`${endPoint}/drivers/`);
+            let resultDrivers = responseDrivers.data;
+            let update = false;
+            UpdateStateDrivers(resultDrivers, update);
+        } 
+        */
+
+
+       
+
+
+
+
+    };
+
+    let dato = JSON.parse(localStorage.user);
+    console.log(`Hola, status recuperado es: ${dato.statusDriver}`)
+
+    if (dato.status == "1" ) {
+         return (
+            <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
+                {/* Main Fields */}   
+                <Grid
+                    mb='20px'
+                    gridTemplateColumns={{ xl: "repeat(3, 1fr)", "2xl": "1fr 0.46fr" }}
+                    gap={{ base: "20px", xl: "20px" }}
+                    display={{ base: "block", xl: "grid" }}>
+                    <Flex
+                        flexDirection='column'
+                        gridArea={{ xl: "1 / 1 / 2 / 3", "2xl": "1 / 1 / 2 / 2" }}>
+                        {/* <Banner /> */}
+                        <Flex direction='column'>
+                            <Flex
+                                mt='45px'
+                                mb='20px'
+                                justifyContent='space-between'
+                                direction={{ base: "column", md: "row" }}
+                                align={{ base: "start", md: "center" }}>
+                                <Text color={textColor} fontSize='2xl' ms='24px' fontWeight='700'>
+                                    ESTUDIANTES - NIVELES
               </Text>
-              {/* <Flex
+                                {/* <Flex
                 align='center'
                 me='20px'
                 ms={{ base: "24px", md: "0px" }}
@@ -111,61 +193,61 @@ export default function Marketplace() {
                   Sports
                 </Link>
               </Flex> */}
-            </Flex>
-            <SimpleGrid columns={{ base: 1, md: 1 }} gap='20px'>
-              <Students
-                name='PÁRVULO'
-                // author='By Esthera Jackson'
-                // bidders={[
-                //   Avatar1,
-                //   Avatar2,
-                //   Avatar3,
-                //   Avatar4,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                // ]}
-                image={Nft1}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <Students
-                name='BÁSICA'
-                // author='By Nick Wilson'
-                // bidders={[
-                //   Avatar1,
-                //   Avatar2,
-                //   Avatar3,
-                //   Avatar4,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                // ]}
-                image={Nft2}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-              <Students
-                name='CONDUCTORES'
-                // author='By Will Smith'
-                // bidders={[
-                //   Avatar1,
-                //   Avatar2,
-                //   Avatar3,
-                //   Avatar4,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                //   Avatar1,
-                // ]}
-                image={Nft3}
-                currentbid='0.91 ETH'
-                download='#'
-              />
-            </SimpleGrid>
-            {/* <Text
+                            </Flex>
+                            <SimpleGrid columns={{ base: 1, md: 1 }} gap='20px'>
+                                <Students
+                                    name='PÁRVULO'
+                                    // author='By Esthera Jackson'
+                                    // bidders={[
+                                    //   Avatar1,
+                                    //   Avatar2,
+                                    //   Avatar3,
+                                    //   Avatar4,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    // ]}
+                                    image={Nft1}
+                                    currentbid='0.91 ETH'
+                                    download='#'
+                                />
+                                <Students
+                                    name='BÁSICA'
+                                    // author='By Nick Wilson'
+                                    // bidders={[
+                                    //   Avatar1,
+                                    //   Avatar2,
+                                    //   Avatar3,
+                                    //   Avatar4,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    // ]}
+                                    image={Nft2}
+                                    currentbid='0.91 ETH'
+                                    download='#'
+                                />
+                                <Students
+                                    name='CONDUCTORES'
+                                    // author='By Will Smith'
+                                    // bidders={[
+                                    //   Avatar1,
+                                    //   Avatar2,
+                                    //   Avatar3,
+                                    //   Avatar4,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    //   Avatar1,
+                                    // ]}
+                                    image={Nft3}
+                                    currentbid='0.91 ETH'
+                                    download='#'
+                                />
+                            </SimpleGrid>
+                            {/* <Text
               mt='45px'
               mb='36px'
               color={textColor}
@@ -174,7 +256,7 @@ export default function Marketplace() {
               fontWeight='700'>
               Recently Added
             </Text> */}
-            {/* <SimpleGrid
+                            {/* <SimpleGrid
               columns={{ base: 1, md: 3 }}
               gap='20px'
               mb={{ base: "20px", xl: "0px" }}>
@@ -230,18 +312,18 @@ export default function Marketplace() {
                 download='#'
               />
             </SimpleGrid> */}
-          </Flex>
-        </Flex>
-        <Flex
-          flexDirection='column'
-          gridArea={{ xl: "1 / 3 / 2 / 4", "2xl": "1 / 2 / 2 / 3" }}>
-          {/* <Card px='0px' mb='20px'>
+                        </Flex>
+                    </Flex>
+                    <Flex
+                        flexDirection='column'
+                        gridArea={{ xl: "1 / 3 / 2 / 4", "2xl": "1 / 2 / 2 / 3" }}>
+                        {/* <Card px='0px' mb='20px'>
             <TableTopCreators
               tableData={tableDataTopCreators}
               columnsData={tableColumnsTopCreators}
             />
           </Card> */}
-          {/* <Card p='0px'>
+                        {/* <Card p='0px'>
             <Flex
               align={{ sm: "flex-start", lg: "center" }}
               justify='space-between'
@@ -297,9 +379,37 @@ export default function Marketplace() {
               price='0.91 ETH'
             />
           </Card> */}
-        </Flex>
-      </Grid>
-      {/* Delete Product */}
-    </Box>
-  );
-}
+                    </Flex>
+                </Grid>
+                {/* Delete Product */}
+            </Box>
+        );
+    }
+    else {
+        return (
+            <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
+
+                <Alert
+                    status='error'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='150px'
+                   >
+                    <AlertIcon boxSize='40px' mr={0} alignItems='center' />
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        ACCESO RESTRINGIDO!
+                       </AlertTitle>
+                    <AlertDescription maxWidth='sm'>
+                       Este modulo esta disponible solo para el usuario Administrador.
+                     </AlertDescription>              
+                </Alert>
+            </Box>
+        );
+    }
+};
+
+ 
+

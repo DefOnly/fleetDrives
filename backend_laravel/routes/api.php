@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TravelController;
+use App\Http\Controllers\RutController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,10 +21,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', [AuthController::class, 'login']);
 
-Route::group(['middleware' => 'api'], function () {
-    // Módulo de gestión de usuarios
+Route::group(['middleware' => 'api'], function ($router) {
+   Route::post('login', [AuthController::class, 'login']);
+   Route::post('loginrut', [RutController::class, 'loginrut'])->name('loginrut');
+
+   // Módulo de gestión de usuarios
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
@@ -54,4 +57,12 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('driversTravelsCountPending',  [TravelController::class, 'driversTravelsCountPending']);
     Route::get('driversTravelsCountComplete',  [TravelController::class, 'driversTravelsCountComplete']);
     Route::get('showInfoTravel/{idTravel}',  [TravelController::class, 'showInfoTravel']);
+});
+
+Route::group(['middleware' => 'api2'], function () {
+    // Módulo de conductorews
+    Route::post('logout', [RutController::class, 'logout']);
+    Route::post('refresh', [RutController::class, 'refresh']);
+    Route::post('me', [RutController::class, 'me']);
+  
 });

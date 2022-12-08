@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\frontend_react",
+    "\\frontend_react\\src",
+    "\\frontend_react\\src\\views",
+    "\\frontend_react\\src\\views\\admin",
+    "\\frontend_react\\src\\views\\admin\\dataTables",
+    "\\frontend_react\\src\\views\\admin\\dataTables\\components",
+    "\\frontend_react\\src\\views\\admin\\dataTables\\variables",
+    "\\frontend_react\\src\\views\\admin\\profile",
+    "\\frontend_react\\src\\views\\driver"
+  ],
+  "SelectedNode": "\\frontend_react\\src\\views\\admin\\default\\index.jsx",
+  "PreviewInSolutionExplorer": false
+}
