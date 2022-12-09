@@ -8,7 +8,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTFactory;
 use App\Models\Driver;
 use Illuminate\Http\Request;
-use Config;
+use Illuminate\Support\Facades\Config;
 
 class RutController extends Controller
 {
@@ -18,35 +18,31 @@ class RutController extends Controller
      * @return void
      */
 
-
-     public function __construct()
+    public function __construct()
     {
-       $this->middleware('auth:api2', ['except' => ['loginrut']]);
-
-   Config::set('jwt.user', Driver::class);
-    Config::set('auth.providers', ['users' => [
+        $this->middleware('auth:api2', ['except' => ['loginrut']]);
+        Config::set('jwt.user', Driver::class);
+        Config::set('auth.providers', ['users' => [
             'driver' => 'eloquent',
             'model' => Driver::class,
-      ]]);
+        ]]);
     }
-    
-   
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
 
-     public function loginrut(Request $request){
-    
+    public function loginrut()
+    {
+
         $credentials = request(['rutDriver', 'password']);
-	    if (!$token = JWTAuth::attempt($credentials)){
-        return response()->json(['error' => 'Unauthorized rut'], 401); 
-         
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized rut'], 401);
         }
-        return $this->respondWithToken($token); 
+        return $this->respondWithToken($token);
     }
-  
+
 
     /**
      * Get the authenticated User.
@@ -56,7 +52,6 @@ class RutController extends Controller
     public function me()
     {
         return response()->json(auth()->guard('api2')->user());
-
     }
 
     /**
@@ -93,7 +88,7 @@ class RutController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => JWTFactory::getTTL() * 60,
-           'user' => auth()->user()
+            'user' => auth()->user()
         ]);
     }
 }

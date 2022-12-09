@@ -9,6 +9,7 @@ use App\Models\Agent;
 use App\Models\Driver;
 use App\Models\Van;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -338,7 +339,7 @@ class UserController extends Controller
             'lastNameDM' => $request->lastNameM,
             'enterprise' => $request->enterprise,
             'email' => $request->email,
-            'password' => $request->rut,
+            'password' => Hash::make($request->password),
             'id_van' => $idVan[0]->id,
         ]);
         return true;

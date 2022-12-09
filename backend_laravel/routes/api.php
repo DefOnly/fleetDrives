@@ -21,14 +21,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::group(['middleware' => 'api'], function ($router) {
+Route::group(['middleware' => 'api'], function () {
    Route::post('login', [AuthController::class, 'login']);
    Route::post('loginrut', [RutController::class, 'loginrut'])->name('loginrut');
+   Route::post('logout', [AuthController::class, 'logout']);
+   Route::post('refresh', [AuthController::class, 'refresh']);
 
    // Módulo de gestión de usuarios
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
     Route::get('students/{course}',  [UserController::class, 'index']);
     Route::get('getAllUsers',  [UserController::class, 'getAllUsers']);
@@ -60,7 +59,7 @@ Route::group(['middleware' => 'api'], function ($router) {
 });
 
 Route::group(['middleware' => 'api2'], function () {
-    // Módulo de conductorews
+    // Módulo de conductores
     Route::post('logout', [RutController::class, 'logout']);
     Route::post('refresh', [RutController::class, 'refresh']);
     Route::post('me', [RutController::class, 'me']);

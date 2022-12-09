@@ -254,7 +254,7 @@ export default function HeaderLinks(props) {
               fontSize='sm'
               fontWeight='700'
               color={textColor}>
-              👋&nbsp; {JSON.stringify(getUser().name)}
+              👋&nbsp; {JSON.stringify(getUser().name ? getUser().name : getUser().nameDriver)}
             </Text>
           </Flex>
           <Flex flexDirection='column' p='10px'>

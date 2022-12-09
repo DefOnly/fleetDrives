@@ -122,6 +122,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
     const getAllUsers = await axios.get(`${endPoint}/getAllUsers/`);
     let users = getAllUsers.data;
     let rut = values.rut;
+    let password = rut.replaceAll('.', "");
     let duplicateRut = checkDuplicateRut(users, rut);
     console.log(values);
     if (duplicateRut.length > 0) {
@@ -149,6 +150,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
         lastNameP: values.lastNameP,
         lastNameM: values.lastNameM,
         enterprise: values.enterprise,
+        password: password,
         car: values.car,
         code: values.code,
       });

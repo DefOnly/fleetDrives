@@ -51,7 +51,7 @@ import {
   CircularProgress,
   Alert,
   AlertIcon,
-    AlertTitle,
+  AlertTitle,
   CloseButton,
   AlertDescription,
 } from "@chakra-ui/react";
@@ -76,8 +76,8 @@ function SignIn(props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [isShown, setIsShown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShown, setIsShown] = useState(false);
 
   // Chakra color mode
   const textColor = useColorModeValue("navy.700", "white");
@@ -95,59 +95,57 @@ function SignIn(props) {
   const initialValues = { rut: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const showRutDriver = () => {
-        setShowInputRut(!showInputRut)
-        setshowButtonAdmin(false)
-        setshowButtonDriver(true)
+    setEmail("");
+    setShowInputRut(!showInputRut);
+    setshowButtonAdmin(false);
+    setshowButtonDriver(true);
   };
-    const showEmailAdmin = () => {
-        setShowInputRut(false)
-        setshowButtonAdmin(true)
-        setshowButtonDriver(false)
-    };
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setIsLoading(true);
-        try {
-            if (formValues.rut !== "") {
-                const response = await http.post("/loginrut", {
-                    rutDriver: rut,
-                    password: password,
-                });
-                if (response.data.user.rutDriver !== "" && response.data.user.statusDriver == "1") {
-                    setSuccess("¡Sesión iniciada!");
-                    setIsLoading(false);
-                    setToken(response.data.user, response.data.access_token);
-                }
-                else {
-                    setError("CUENTA DESHABILITADA¡ ");
-                    setIsLoading(false);
-                     }  
-            } if (formValues.rut == "") {
-                const response = await http.post("/login", {
-                    email: email,
-                    password: password,
-                });
-                if (response.data.user.email !== "") {
-                    setSuccess("¡Sesión iniciada!");
-                    setIsLoading(false);
-                    setToken(response.data.user, response.data.access_token);
-                }
-            }
-        } catch (err) {
-            setError("Credenciales incorrectas");
-            setIsLoading(false);
+  const showEmailAdmin = () => {
+    setFormValues(initialValues);
+    setShowInputRut(false);
+    setshowButtonAdmin(true);
+    setshowButtonDriver(false);
+  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      if (formValues.rut !== "") {
+        const response = await http.post("/loginrut", {
+          rutDriver: rut,
+          password: password,
+        });
+        if (
+          response.data.user.rutDriver !== "" &&
+          response.data.user.statusDriver === 1
+        ) {
+          setSuccess("¡Sesión iniciada!");
+          setIsLoading(false);
+          setToken(response.data.user, response.data.access_token);
+        } else {
+          setError("¡Cuenta deshabilitada!");
+          setIsLoading(false);
         }
-    };
-  if (window.location.pathname == "/" && getUser()){
-    return (
-      <Redirect
-        from="/"
-        to="/admin/default"
-        component={MainDashboard}
-      />
-    );
+      } else if (formValues.rut == "") {
+        const response = await http.post("/login", {
+          email: email,
+          password: password,
+        });
+        if (response.data.user.email !== "") {
+          setSuccess("¡Sesión iniciada!");
+          setIsLoading(false);
+          setToken(response.data.user, response.data.access_token);
+        }
+      }
+    } catch (err) {
+      setError("Credenciales incorrectas");
+      setIsLoading(false);
+    }
+  };
+  if (window.location.pathname == "/" && getUser()) {
+    return <Redirect from="/" to="/admin/default" component={MainDashboard} />;
   } else {
-      return (
+    return (
       <DefaultAuth illustrationBackground={illustration} image={illustration}>
         <Flex
           maxW={{ base: "100%", md: "max-content" }}
@@ -161,7 +159,7 @@ function SignIn(props) {
           px={{ base: "25px", md: "0px" }}
           mt={{ base: "40px", md: "14vh" }}
           flexDirection="column"
-              >
+        >
           <Box me="auto">
             <Icon as={FaBus} fontSize="3rem" />
             <Heading color={textColor} fontSize="36px" mb="10px">
@@ -191,7 +189,7 @@ function SignIn(props) {
             <Flex align="center" mb="25px">
               <HSeparator />
               <HSeparator />
-                      </Flex>           
+            </Flex>
             <form onSubmit={handleSubmit}>
               {error && (
                 <Box my={4}>
@@ -210,57 +208,60 @@ function SignIn(props) {
                 </Box>
               )}
               <FormControl isRequired>
-                            {showInputRut ? (
-                                <> <FormLabel
-                                    display="flex"
-                                    ms="4px"
-                                    fontSize="sm"
-                                    fontWeight="500"
-                                    color={textColor}
-                                    mb="8px"
-                                >
-                                    Rut<Text color={brandStars}>*</Text>
-                                  </FormLabel>
-                                    <Input
-                                        value={(formValues.rut = rut.formatted)}
-                                        onChange={(e) => updateRut(e.target.value)}
-                                        isRequired={true}
-                                        variant="auth"
-                                        fontSize="sm"
-                                        ms={{ base: "0px", md: "0px" }}
-                                        type="text"
-                                        placeholder="12.345.678-9"
-                                        mb="24px"
-                                        fontWeight="500"
-                                        size="lg"
-                                    />
-                                </>
-                            ) :
-                                (
-                                    <> <FormLabel
-                                        display="flex"
-                                        ms="4px"
-                                        fontSize="sm"
-                                        fontWeight="500"
-                                        color={textColor}
-                                        mb="8px"
-                                    >
-                                        Email<Text color={brandStars}>*</Text>
-                                    </FormLabel>
-                                        <Input
-                                            onChange={(e) => setEmail(e.currentTarget.value)}
-                                            isRequired={true}
-                                            variant="auth"
-                                            fontSize="sm"
-                                            ms={{ base: "0px", md: "0px" }}
-                                            type="email"
-                                            placeholder="mail@fleetdrives.com"
-                                            mb="24px"
-                                            fontWeight="500"
-                                            size="lg"
-                                        />
-                                    </>
-                                )}
+                {showInputRut ? (
+                  <>
+                    {" "}
+                    <FormLabel
+                      display="flex"
+                      ms="4px"
+                      fontSize="sm"
+                      fontWeight="500"
+                      color={textColor}
+                      mb="8px"
+                    >
+                      Rut<Text color={brandStars}></Text>
+                    </FormLabel>
+                    <Input
+                      value={(formValues.rut = rut.formatted)}
+                      onChange={(e) => updateRut(e.target.value)}
+                      isRequired={true}
+                      variant="auth"
+                      fontSize="sm"
+                      ms={{ base: "0px", md: "0px" }}
+                      type="text"
+                      placeholder="12.345.678-9"
+                      mb="24px"
+                      fontWeight="500"
+                      size="lg"
+                    />
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <FormLabel
+                      display="flex"
+                      ms="4px"
+                      fontSize="sm"
+                      fontWeight="500"
+                      color={textColor}
+                      mb="8px"
+                    >
+                      Email<Text color={brandStars}></Text>
+                    </FormLabel>
+                    <Input
+                      onChange={(e) => setEmail(e.currentTarget.value)}
+                      isRequired={true}
+                      variant="auth"
+                      fontSize="sm"
+                      ms={{ base: "0px", md: "0px" }}
+                      type="email"
+                      placeholder="mail@fleetdrives.com"
+                      mb="24px"
+                      fontWeight="500"
+                      size="lg"
+                    />
+                  </>
+                )}
                 <FormLabel
                   ms="4px"
                   fontSize="sm"
@@ -268,7 +269,7 @@ function SignIn(props) {
                   color={textColor}
                   display="flex"
                 >
-                  Password<Text color={brandStars}>*</Text>
+                  Contraseña<Text color={brandStars}></Text>
                 </FormLabel>
                 <InputGroup size="md">
                   <Input
@@ -281,7 +282,11 @@ function SignIn(props) {
                     type={show ? "text" : "password"}
                     variant="auth"
                   />
-                  <InputRightElement display="flex" alignItems="center" mt="4px">
+                  <InputRightElement
+                    display="flex"
+                    alignItems="center"
+                    mt="4px"
+                  >
                     <Icon
                       color={textColorSecondary}
                       _hover={{ cursor: "pointer" }}
@@ -290,34 +295,6 @@ function SignIn(props) {
                     />
                   </InputRightElement>
                 </InputGroup>
-                <Flex justifyContent="space-between" align="center" mb="24px">
-                  <FormControl display="flex" alignItems="center">
-                    <Checkbox
-                      id="remember-login"
-                      colorScheme="brandScheme"
-                      me="10px"
-                    />
-                    <FormLabel
-                      htmlFor="remember-login"
-                      mb="0"
-                      fontWeight="normal"
-                      color={textColor}
-                      fontSize="sm"
-                    >
-                    Mantenerme logueado
-                    </FormLabel>
-                  </FormControl>
-                  <NavLink to="/auth/forgot-password">
-                    <Text
-                      color={textColorBrand}
-                      fontSize="sm"
-                      w="124px"
-                      fontWeight="500"
-                    >
-                    ¿Olvidaste contraseña?
-                    </Text>
-                  </NavLink>
-                              </Flex>
                 <Button
                   type="submit"
                   fontSize="sm"
@@ -328,44 +305,47 @@ function SignIn(props) {
                   mb="24px"
                 >
                   {isLoading ? (
-                    <CircularProgress isIndeterminate size="24px" color="teal" />
+                    <CircularProgress
+                      isIndeterminate
+                      size="24px"
+                      color="teal"
+                    />
                   ) : (
                     "Iniciar Sesión"
                   )}
                 </Button>
               </FormControl>
             </form>
-                    <>
-                        {showButtonAdmin &&
-
-                            <Button
-                                onClick={showRutDriver}
-                                fontSize="sm"
-                                variant="brand"
-                                fontWeight="500"
-                                w="100%"
-                                h="50"
-                                mb="24px"
-                            >
-                                Iniciar Sesión como Conductor
-                       </Button>
-                        }
-                    </>
-                    <>
-                        {showButtonDriver &&
-                            <Button
-                                onClick={showEmailAdmin}
-                                fontSize="sm"
-                                variant="brand"
-                                fontWeight="500"
-                                w="100%"
-                                h="50"
-                                mb="24px"
-                            >
-                                Iniciar Sesión como Administrador
-                      </Button>
-                        }
-                    </>
+            <>
+              {showButtonAdmin && (
+                <Button
+                  onClick={() => showRutDriver()}
+                  fontSize="sm"
+                  variant="brand"
+                  fontWeight="500"
+                  w="100%"
+                  h="50"
+                  mb="24px"
+                >
+                  Iniciar Sesión como Conductor
+                </Button>
+              )}
+            </>
+            <>
+              {showButtonDriver && (
+                <Button
+                  onClick={() => showEmailAdmin()}
+                  fontSize="sm"
+                  variant="brand"
+                  fontWeight="500"
+                  w="100%"
+                  h="50"
+                  mb="24px"
+                >
+                  Iniciar Sesión como Administrador
+                </Button>
+              )}
+            </>
             <Flex
               flexDirection="column"
               justifyContent="center"
@@ -374,7 +354,7 @@ function SignIn(props) {
               mt="0px"
             >
               <Text color={textColorDetails} fontWeight="400" fontSize="14px">
-                            ¿Aún no estas registrado?
+                ¿Aún no estas registrado?
                 <NavLink to="/auth/sign-up">
                   <Text
                     color={textColorBrand}
@@ -382,7 +362,7 @@ function SignIn(props) {
                     ms="5px"
                     fontWeight="500"
                   >
-                                    Crear una cuenta
+                    Crear una cuenta
                   </Text>
                 </NavLink>
               </Text>

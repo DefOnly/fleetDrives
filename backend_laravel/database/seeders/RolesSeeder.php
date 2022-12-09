@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Level;
 use App\Models\Zone;
 use App\Models\User;
+use App\Models\Driver;
 use App\Models\Van;
 use App\Models\Province;
 use App\Models\Coordinate;
@@ -57,6 +58,64 @@ class RolesSeeder extends Seeder
                 'id_coordinates' => 0,
                 'id_agent' => 0,
                 'id_province' => 0,
+            ]
+        ]);
+
+        Driver::insert([
+            [
+                'rutDriver' => '9.593.676-8',
+                'nameDriver' => 'NELLY MARILUZ',
+                'lastNameDP' => 'TAPIA',
+                'lastNameDM' => 'ROSAS',
+                'enterprise' => 'DAEM',
+                'password' => Hash::make('9593676-8'),
+                'statusDriver' => 1,
+                'id_van' => 1,
+                'id_college' => 1,
+            ],
+            [
+                'rutDriver' => '6.943.893-8',
+                'nameDriver' => 'DELFIN',
+                'lastNameDP' => 'MORA',
+                'lastNameDM' => 'CUYAN',
+                'enterprise' => 'Licitación',
+                'password' => Hash::make('6943893-8'),
+                'statusDriver' => 1,
+                'id_van' => 2,
+                'id_college' => 1,
+            ],
+            [
+                'rutDriver' => '9.633.162-2',
+                'nameDriver' => 'JAIME RAÚL',
+                'lastNameDP' => 'ARRIAGADA',
+                'lastNameDM' => 'OVANDO',
+                'enterprise' => 'Externos DAEM',
+                'password' => Hash::make('9633162-2'),
+                'statusDriver' => 1,
+                'id_van' => 3,
+                'id_college' => 1,
+            ],
+            [
+                'rutDriver' => '14.084.456-K',
+                'nameDriver' => 'ERWIN HERNÁN',
+                'lastNameDP' => 'GARCES',
+                'lastNameDM' => 'GUERRERO',
+                'enterprise' => 'Externos DAEM',
+                'password' => Hash::make('14084456-K'),
+                'statusDriver' => 1,
+                'id_van' => 4,
+                'id_college' => 1,
+            ],
+            [
+                'rutDriver' => '10.466.155-6',
+                'nameDriver' => 'MARÍA SOLEDAD',
+                'lastNameDP' => 'STIMPER',
+                'lastNameDM' => 'JARA',
+                'enterprise' => 'Licitación',
+                'password' => Hash::make('10466155-6'),
+                'statusDriver' => 1,
+                'id_van' => 5,
+                'id_college' => 1,
             ]
         ]);
 

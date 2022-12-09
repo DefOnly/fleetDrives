@@ -89,39 +89,41 @@ export default function TrackingMap() {
     alert("El navegador no tiene opción de geolocalización");
     throw new Error("El navegador no tiene opción de geolocalización");
   }
-
+  let dato = JSON.parse(localStorage.user);
   useLayoutEffect(() => {
-    setIsLoading(false);
-    if (!isLoading) {
-      const map = new Map({
-        container: "mapDiv", // container ID
-        style: "mapbox://styles/mapbox/streets-v12", // style URL
-        center: userLocation, // starting position [lng, lat]
-        zoom: zoom, // starting zoom
-      });
-      const collegeLocationPopUp = new Popup().setHTML(
-        `<img src="https://www.diariofutrono.cl/files/62957cb21d73f_890x533.webp" width="500" height="600">
-        <h4 style="text-align: center"><strong>Escuela Rural Riñinahue</strong></h4>`
-      );
-      const collegeMarker = new Marker({ color: "#422afb" })
-        .setLngLat([lng, lat])
-        .setPopup(collegeLocationPopUp)
-        .addTo(map);
-      setMap(map);
+      if (dato.status === 1) {
+      setIsLoading(false);
+      if (!isLoading) {
+        const map = new Map({
+          container: "mapDiv", // container ID
+          style: "mapbox://styles/mapbox/streets-v12", // style URL
+          center: userLocation, // starting position [lng, lat]
+          zoom: zoom, // starting zoom
+        });
+        const collegeLocationPopUp = new Popup().setHTML(
+          `<img src="https://www.diariofutrono.cl/files/62957cb21d73f_890x533.webp" width="500" height="600">
+          <h4 style="text-align: center"><strong>Escuela Rural Riñinahue</strong></h4>`
+        );
+        const collegeMarker = new Marker({ color: "#422afb" })
+          .setLngLat([lng, lat])
+          .setPopup(collegeLocationPopUp)
+          .addTo(map);
+        setMap(map);
+      }
     }
-  }, [lng, lat, zoom, userLocation, isLoading]);
+    }, [lng, lat, zoom, userLocation, isLoading]);
 
   // if (userLocation === undefined) {
   //   setIsLoading(true);
   //   return <>{isLoading && <Spinner size="xl" />}</>;
   // }
-  if (isLoading) {
-    return (
-      <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-        <Spinner size="xl" />
-      </Box>
-    );
-    }
+  // if (isLoading) {
+  //   return (
+  //     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
+  //       <Spinner size="xl" />
+  //     </Box>
+  //   );
+  //   }
      const locationOrigin = () => {
     // if (!isMapReady) throw new Error("Mapa no está listo");
     if (!userLocation) throw new Error("No está definida una ubicación");
@@ -134,8 +136,8 @@ export default function TrackingMap() {
   const onQueryChange = (event) => {
     
   };
- let dato = JSON.parse(localStorage.user);
- if (dato.status == "1") {
+
+ if (dato.status === 1) {
    return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <div
