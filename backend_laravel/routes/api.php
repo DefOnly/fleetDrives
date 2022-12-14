@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\TravelController;
+use App\Http\Controllers\CodeController;
 use App\Http\Controllers\RutController;
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('driversCount',  [UserController::class, 'driversCount']);
     Route::get('getNumberStudents',  [UserController::class, 'getNumberStudents']);
     Route::get('driverStudent/{idDriver}',  [UserController::class, 'driverStudent']);
-    Route::post('sendCodeVerification',  [UserController::class, 'sendCodeVerification']);
+    Route::post('sendCodeVerification',  [CodeController::class, 'sendCodeVerification']);
     Route::put('updateStatusUser',  [UserController::class, 'updateStatusUser']);
     // Módulo de planificación de viajes
     Route::post('AddDateTimeTravel',  [TravelController::class, 'AddDateTimeTravel']);
@@ -56,6 +57,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('driversTravelsCountPending',  [TravelController::class, 'driversTravelsCountPending']);
     Route::get('driversTravelsCountComplete',  [TravelController::class, 'driversTravelsCountComplete']);
     Route::get('showInfoTravel/{idTravel}',  [TravelController::class, 'showInfoTravel']);
+    //Módulo de Rastreos
+    Route::get('getAllProvinces',  [TravelController::class, 'getAllProvinces']);
+
 });
 
 Route::group(['middleware' => 'api2'], function () {

@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Agent;
 use App\Models\Driver;
 use App\Models\Van;
-use Twilio\Rest\Client;
+
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -218,22 +218,6 @@ class UserController extends Controller
         return $newArray;
     }
 
-    public function sendCodeVerification(Request $request)
-    {
-        $pinArray = $request->pinArray;
-        $user = $request->user;
-        $getPhoneUserAdmin = User::select('phone')->where('id', '=', $user)->get();
-        try {
-            $account_sid = getenv("TWILIO_SID");
-            $auth_token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_number = getenv("TWILIO_NUMBER");
-            $client = new Client($account_sid, $auth_token);
-            $client->messages->create('+56' . $getPhoneUserAdmin[0]->phone, ['from' => $twilio_number, 'body' => 'fleetDrives: Su código de validación es:' . " " . implode("", $pinArray)]);
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
     public function updateStatusUser(Request $request)
     {
         $action = $request->action;
@@ -341,6 +325,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'id_van' => $idVan[0]->id,
+            'id_college' => 1,
         ]);
         return true;
     }

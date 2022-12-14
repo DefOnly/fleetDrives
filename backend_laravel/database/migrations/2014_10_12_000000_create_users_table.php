@@ -25,7 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('password')->nullable();
             $table->integer('statusDriver')->default(1);
             $table->integer('id_van');
-            $table->integer('id_college');
+            $table->integer('id_college')->nullable();
             // $table->integer('id_service_shipping')->nullable();
             $table->softDeletes();
             $table->rememberToken();
@@ -48,9 +48,9 @@ class CreateUsersTable extends Migration
             $table->integer('id_level');
             $table->string('zone')->nullable();
             $table->string('address')->nullable();
-            $table->integer('id_coordinates')->nullable();
             $table->integer('id_agent');
             $table->integer('id_province');
+            $table->integer('id_college')->nullable();
             $table->foreignId('id_driver')
                 ->nullable() // <-- IMPORTANTE: LA COLUMNA DEBE ACEPTAR NULL COMO VALOR VALIDO
                 ->onDelete('SET NULL')

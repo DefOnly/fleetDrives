@@ -37,9 +37,9 @@ class RolesSeeder extends Seeder
                 'id_level' => 0,
                 'zone' => '',
                 'address' => '',
-                'id_coordinates' => 0,
                 'id_agent' => 0,
                 'id_province' => 0,
+                'id_college' => 0
             ],
             [
                 'rut' => '13.402.004-0',
@@ -55,9 +55,9 @@ class RolesSeeder extends Seeder
                 'id_level' => 0,
                 'zone' => '',
                 'address' => '',
-                'id_coordinates' => 0,
                 'id_agent' => 0,
                 'id_province' => 0,
+                'id_college' => 0
             ]
         ]);
 
@@ -71,7 +71,7 @@ class RolesSeeder extends Seeder
                 'password' => Hash::make('9593676-8'),
                 'statusDriver' => 1,
                 'id_van' => 1,
-                'id_college' => 1,
+                'id_college' => 0,
             ],
             [
                 'rutDriver' => '6.943.893-8',
@@ -82,7 +82,7 @@ class RolesSeeder extends Seeder
                 'password' => Hash::make('6943893-8'),
                 'statusDriver' => 1,
                 'id_van' => 2,
-                'id_college' => 1,
+                'id_college' => 0,
             ],
             [
                 'rutDriver' => '9.633.162-2',
@@ -93,7 +93,7 @@ class RolesSeeder extends Seeder
                 'password' => Hash::make('9633162-2'),
                 'statusDriver' => 1,
                 'id_van' => 3,
-                'id_college' => 1,
+                'id_college' => 0,
             ],
             [
                 'rutDriver' => '14.084.456-K',
@@ -104,7 +104,7 @@ class RolesSeeder extends Seeder
                 'password' => Hash::make('14084456-K'),
                 'statusDriver' => 1,
                 'id_van' => 4,
-                'id_college' => 1,
+                'id_college' => 0,
             ],
             [
                 'rutDriver' => '10.466.155-6',
@@ -115,7 +115,18 @@ class RolesSeeder extends Seeder
                 'password' => Hash::make('10466155-6'),
                 'statusDriver' => 1,
                 'id_van' => 5,
-                'id_college' => 1,
+                'id_college' => 0,
+            ],
+            [
+                'rutDriver' => '0000000-0',
+                'nameDriver' => 'No tiene conductor asignado',
+                'lastNameDP' => '',
+                'lastNameDM' => '',
+                'enterprise' => '',
+                'password' => '',
+                'statusDriver' => 1,
+                'id_van' => 0,
+                'id_college' => 0,
             ]
         ]);
 
@@ -292,7 +303,7 @@ class RolesSeeder extends Seeder
 
         Zone::insert([
             [
-                'place' => 'POCURA',
+                'place' => 'PUCURA',
             ],
             // id = 1
             [

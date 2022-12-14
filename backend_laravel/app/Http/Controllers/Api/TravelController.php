@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Travel;
 use App\Models\TravelNotification;
 use App\Models\Driver;
+use App\Models\Coordinate;
 
 class TravelController extends Controller
 {
@@ -103,6 +104,11 @@ class TravelController extends Controller
             ->where('statusDriver', 1)
             ->get();
         return $drivers;
+    }
+
+    public function getAllProvinces(){
+        $provinces = Coordinate::select('*')->join('provinces', 'provinces.id_coordinates', '=', 'coordinates.id')->get();
+        return $provinces;
     }
 
     /**

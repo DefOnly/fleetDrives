@@ -124,7 +124,6 @@ const TableDrivers = ({ drivers, countDriver }) => {
     let rut = values.rut;
     let password = rut.replaceAll('.', "");
     let duplicateRut = checkDuplicateRut(users, rut);
-    console.log(values);
     if (duplicateRut.length > 0) {
       setRutError(true);
       setSuccess(false);
