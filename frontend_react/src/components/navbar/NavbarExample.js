@@ -353,7 +353,7 @@ export default function AuthNavbar(props) {
         cursor='pointer'
         position='relative'>
         <Text fontSize='sm' color={mainText}>
-          Pages
+          Páginas
         </Text>
         <Icon
           as={GoChevronDown}

@@ -19,50 +19,58 @@ export default function GeneralInformation(props) {
     <Card mb={{ base: "0px", "2xl": "20px" }} {...rest}>
       <Text
         color={textColorPrimary}
-        fontWeight='bold'
-        fontSize='2xl'
-        mt='10px'
-        mb='4px'>
-        General Information
+        fontWeight="bold"
+        fontSize="2xl"
+        mt="10px"
+        mb="4px"
+      >
+        Información General
       </Text>
-      <Text color={textColorSecondary} fontSize='md' me='26px' mb='40px'>
-        As we live, our hearts turn colder. Cause pain is what we go through as
-        we become older. We get insulted by others, lose trust for those others.
-        We get back stabbed by friends. It becomes harder for us to give others
-        a hand. We get our heart broken by people we love, even that we give
-        them all...
-      </Text>
-      <SimpleGrid columns='2' gap='20px'>
+      <SimpleGrid columns="2" gap="20px">
         <Information
           boxShadow={cardShadow}
-          title='Education'
-          value='Stanford University'
+          title="Identificación"
+          value="Escuela Rural Riñinahue"
         />
         <Information
           boxShadow={cardShadow}
-          title='Languages'
-          value='English, Spanish, Italian'
+          title="DECRETO COOPERADOR"
+          value="3160/1981"
+        />
+        <Information boxShadow={cardShadow} title="R.B.D" value="007303-2" />
+        <Information
+          boxShadow={cardShadow}
+          title="DIRECCIÓN"
+          value="C.RIÑINAHUE KM. 28"
         />
         <Information
           boxShadow={cardShadow}
-          title='Department'
-          value='Product Design'
+          title="SOSTENEDOR"
+          value="I.MUNICIPALIDAD DE LAGO RANCO"
         />
         <Information
           boxShadow={cardShadow}
-          title='Work History'
-          value='Google, Facebook'
+          title="JORNADA"
+          value="ESCOLAR COMPLETA DIURNA"
         />
-        <Information
-          boxShadow={cardShadow}
-          title='Organization'
-          value='Simmmple Web LLC'
-        />
-        <Information
-          boxShadow={cardShadow}
-          title='Birthday'
-          value='20 July 1986'
-        />
+        <Text color={textColorSecondary} fontSize="md" me="26px" mb="40px">
+          HORARIO FUNCIONAMIENTO: Lunes a jueves 07:30 a 18:00 HRS./Viernes
+          07:30 a 15:00 hrs
+        </Text>
+        <Text color={textColorSecondary} fontSize="md" me="26px" mb="40px">
+          NOMBRE DIRECTOR: LUIS MEZA CAIHUANTE.
+        </Text>
+        <Text color={textColorSecondary} fontSize="md" me="26px" mb="40px">
+          III.- ANTECEDENTES GENERALES. a) MATRÍCULA TOTAL 2022 : 155 alumnos.
+          Matrícula Nivel Parvulario(30) : NT1 14 alumnos y NT2 16 alumnos.
+          Matrícula Básica : 114 alumnos.
+        </Text>
+        <Text color={textColorSecondary} fontSize="md" me="26px" mb="40px">
+          Equipo Profesionales PIE : 02 Educadoras Diferencial 40 hrs. 01
+          Psicólogo 15 hrs. 01 Fonoaudiólogo 26 hrs. 01 Terapeuta 06 hrs. 1
+          psicopedagoga 08 hrs. 01 Técnico Educ. Diferencial 44 hrs. 01 Auxiliar
+          PIE
+        </Text>
       </SimpleGrid>
     </Card>
   );

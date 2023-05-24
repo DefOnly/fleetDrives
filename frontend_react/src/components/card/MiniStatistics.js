@@ -43,7 +43,7 @@ export default function Default(props) {
             }}>
             {value}
           </StatNumber>
-          {growth ? (
+          {/* {growth ? (
             <Flex align='center'>
               <Text color='green.500' fontSize='xs' fontWeight='700' me='5px'>
                 {growth}
@@ -52,7 +52,7 @@ export default function Default(props) {
                 since last month
               </Text>
             </Flex>
-          ) : null}
+          ) : null} */}
         </Stat>
         <Flex ms='auto' w='max-content'>
           {endContent}

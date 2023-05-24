@@ -20,6 +20,7 @@ class CreateTravelsTable extends Migration
             $table->enum('type_travel', [1, 2, 3])->default(1);  // 1. No definido, 2. Ida, 3. Vuelta
             $table->integer('id_driver');
             $table->enum('status_travel', [1, 2, 3])->default(1); // 1. No iniciado, 2. En Ruta, 3. Completado
+            $table->enum('status_notification', ['Sin estado', 'Enviado', 'Visto'])->default('Sin estado');
             $table->timestamps();
         });
     }

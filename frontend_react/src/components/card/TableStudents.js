@@ -52,6 +52,9 @@ import {
   InputLeftAddon,
   InputGroup,
   Badge,
+  AlertTitle,
+  AlertDescription,
+  CloseButton,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 // import TablesTableRow from "components/card/";
@@ -108,6 +111,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
   const [errorPin, setErrorPin] = useState(false);
   const [idStudent, setIdStudent] = useState([]);
   const [messageSuccess, setMessageSuccess] = useState("");
+  const [codeSended, setCodeSended] = useState(false);
   // const [input, setInput] = useState("");
   // const handleInputChange = (e) => setInput(e.target.value);
 
@@ -200,6 +204,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
     setIdStudent(idStudent);
     setModalAllow(true);
     setModalDelete(false);
+    setCodeSended(false);
     setIsShown(false);
     onOpen();
   };
@@ -208,6 +213,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
     setIdStudent(idStudent);
     setModalDelete(true);
     setModalAllow(false);
+    setCodeSended(false);
     setIsShown(false);
     onOpen();
   };
@@ -455,8 +461,10 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
 
   const count = preGlobalFilteredRows.length;
   const [value, setValue] = useState(globalFilter);
+  const { isOpen: isVisible } = useDisclosure({ defaultIsOpen: false });
 
   const sendCodeVerification = async () => {
+    setCodeSended(true);
     const pinArray = [
       getRandomInt(10),
       getRandomInt(10),
@@ -483,28 +491,32 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
       pinGenerate[3] === parseInt(pin4)
     ) {
       if (action === false) {
-        const response = await axios.put(`${endPoint}/updateStatusUser/`, {
-          idUser: idStudent,
-          action: 0,
-        }).then(async (response) => {
-          const showUpdateStudents = await axios.get(
-            `${endPoint}/students/${course}/`
-          );
-          let students = showUpdateStudents.data;
-          UpdateStateStudents(students);
-        });
+        const response = await axios
+          .put(`${endPoint}/updateStatusUser/`, {
+            idUser: idStudent,
+            action: 0,
+          })
+          .then(async (response) => {
+            const showUpdateStudents = await axios.get(
+              `${endPoint}/students/${course}/`
+            );
+            let students = showUpdateStudents.data;
+            UpdateStateStudents(students);
+          });
         setMessageSuccess("¡Estudiante Eliminado!");
       } else {
-        const response = await axios.put(`${endPoint}/updateStatusUser/`, {
-          idUser: idStudent,
-          action: 1,
-        }).then(async (response) => {
-          const showUpdateStudents = await axios.get(
-            `${endPoint}/students/${course}/`
-          );
-          let students = showUpdateStudents.data;
-          UpdateStateStudents(students);
-        });
+        const response = await axios
+          .put(`${endPoint}/updateStatusUser/`, {
+            idUser: idStudent,
+            action: 1,
+          })
+          .then(async (response) => {
+            const showUpdateStudents = await axios.get(
+              `${endPoint}/students/${course}/`
+            );
+            let students = showUpdateStudents.data;
+            UpdateStateStudents(students);
+          });
         setMessageSuccess("¡Estudiante Habilitado!");
       }
       setSuccessPin(true);
@@ -539,7 +551,7 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
         >
           {course}
         </Text>
-        <Menu />
+        {/* <Menu /> */}
       </Flex>
       {/* <Table variant="simple" color="gray.500" mb="24px">
         <Thead>
@@ -1502,8 +1514,8 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
                   validación de 4 dígitos.
                   <br></br>
                   <strong>
-                    Nota: Esta acción dejará al estudiante eliminado
-                    para el conductor que tiene asignado.
+                    Nota: Esta acción dejará al estudiante eliminado para el
+                    conductor que tiene asignado.
                   </strong>
                   <br></br>
                   <br></br>
@@ -1549,6 +1561,18 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
                       ¡El pin ingresado es incorrecto, intente nuevamente!
                     </Alert>
                   </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={codeSended}>
+                  <Alert status="success">
+                    <AlertIcon />
+                    <Box>
+                      <AlertTitle>¡Código de validación enviado!</AlertTitle>
+                      <AlertDescription>
+                        Se ha enviado el código de 4 dígitos a su teléfono
+                        registrado.
+                      </AlertDescription>
+                    </Box>
+                  </Alert>
                 </SlideFade>
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={onClose}>
@@ -1626,6 +1650,18 @@ const TableStudents = ({ dataStudents, drivers, course, columns }) => {
                       ¡El pin ingresado es incorrecto, intente nuevamente!
                     </Alert>
                   </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={codeSended}>
+                  <Alert status="success">
+                    <AlertIcon />
+                    <Box>
+                      <AlertTitle>¡Código de validación enviado!</AlertTitle>
+                      <AlertDescription>
+                        Se ha enviado el código de 4 dígitos a su teléfono
+                        registrado.
+                      </AlertDescription>
+                    </Box>
+                  </Alert>
                 </SlideFade>
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={onClose}>

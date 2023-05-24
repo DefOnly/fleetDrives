@@ -48,7 +48,7 @@ const routes = [
     component: Profile,
   },
   {
-    name: "Rastreo",
+    name: "Mapa",
     layout: "/admin",
     path: "/rtl",
     icon: <Icon as={FaMapMarkerAlt} width="20px" height="20px" color="inherit" />,

@@ -33,11 +33,11 @@ export default function Upload(props) {
               <Icon as={MdUpload} w='80px' h='80px' color={brandColor} />
               <Flex justify='center' mx='auto' mb='12px'>
                 <Text fontSize='xl' fontWeight='700' color={brandColor}>
-                  Upload Files
+                Subir documento
                 </Text>
               </Flex>
               <Text fontSize='sm' fontWeight='500' color='secondaryGray.500'>
-                PNG, JPG and GIF files are allowed
+                Formatos PDF o .doc
               </Text>
             </Box>
           }
@@ -49,7 +49,7 @@ export default function Upload(props) {
             textAlign='start'
             fontSize='2xl'
             mt={{ base: "20px", "2xl": "50px" }}>
-            Complete your profile
+            Contratos Conductores
           </Text>
           <Text
             color={textColorSecondary}
@@ -57,8 +57,7 @@ export default function Upload(props) {
             my={{ base: "auto", "2xl": "10px" }}
             mx='auto'
             textAlign='start'>
-            Stay on the pulse of distributed projects with an anline whiteboard
-            to plan, coordinate and discuss
+            Puede cargar los contratos con los conductores vigentes
           </Text>
           <Flex w='100%'>
             <Button
@@ -68,8 +67,9 @@ export default function Upload(props) {
               minW='140px'
               mt={{ base: "20px", "2xl": "auto" }}
               variant='brand'
-              fontWeight='500'>
-              Publish now
+              fontWeight='500'
+              fontSize='xs'>
+              Guardar documento
             </Button>
           </Flex>
         </Flex>

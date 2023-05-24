@@ -353,7 +353,7 @@ function SignIn(props) {
               maxW="100%"
               mt="0px"
             >
-              <Text color={textColorDetails} fontWeight="400" fontSize="14px">
+              {/* <Text color={textColorDetails} fontWeight="400" fontSize="14px">
                 ¿Aún no estas registrado?
                 <NavLink to="/auth/sign-up">
                   <Text
@@ -365,7 +365,7 @@ function SignIn(props) {
                     Crear una cuenta
                   </Text>
                 </NavLink>
-              </Text>
+              </Text> */}
             </Flex>
           </Flex>
         </Flex>

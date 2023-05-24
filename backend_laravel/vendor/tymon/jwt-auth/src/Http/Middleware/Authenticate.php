@@ -13,7 +13,6 @@ namespace Tymon\JWTAuth\Http\Middleware;
 
 use Closure;
 
-/** @deprecated */
 class Authenticate extends BaseMiddleware
 {
     /**
@@ -21,9 +20,10 @@ class Authenticate extends BaseMiddleware
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @return mixed
      *
      * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+     *
+     * @return mixed
      */
     public function handle($request, Closure $next)
     {

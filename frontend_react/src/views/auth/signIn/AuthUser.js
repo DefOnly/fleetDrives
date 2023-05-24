@@ -17,12 +17,12 @@ export default function AuthUser(){
     const [token, setToken] = useState(getToken());
     const [user, setUser] = useState(getUser());
 
-    const saveToken = (user, token) => {
+    const saveToken = (user, token, changeDataUser) => {
         localStorage.setItem('token', JSON.stringify(token));
         localStorage.setItem('user', JSON.stringify(user));
         setToken(token);
         setUser(user);
-        history.push("/admin");
+        if(changeDataUser !== true) history.push("/admin");
     }
 
     const logout = () => {

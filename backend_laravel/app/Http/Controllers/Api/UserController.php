@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Agent;
 use App\Models\Driver;
 use App\Models\Van;
-
+use App\Models\Travel;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -140,7 +140,9 @@ class UserController extends Controller
 
     public function getNumberStudents()
     {
-        $count = User::where('users.id_profile', "=", 2)->count();
+        $count = User::where('users.id_profile', 2)
+            ->where('users.status', 1)
+            ->count();
         return $count;
     }
 
@@ -203,8 +205,18 @@ class UserController extends Controller
     public function driverStudent(Request $request)
     {
         $idDriver = $request->route()->parameter('idDriver');
-        $driver_student = User::select('users.id', 'name', 'lastNameP', 'lastNameM', 'levels.nameLevel')
+        $driver_student = User::select(
+            'users.id',
+            'name',
+            'lastNameP',
+            'lastNameM',
+            'levels.nameLevel',
+            'address',
+            'provinces.nameProvince',
+            'zone'
+        )
             ->join('levels', 'levels.id', '=', 'users.id_level')
+            ->join('provinces', 'provinces.id', '=', 'users.id_province')
             ->where('users.id_driver', '=', $idDriver)
             ->where('users.id_profile', '=', 2)
             ->where('users.status', '=', 1)
@@ -216,6 +228,27 @@ class UserController extends Controller
             $newArray[] = $value;
         }
         return $newArray;
+    }
+
+    public function travelsNotificationsDriver(Request $request){
+         $idDriver = $request->route()->parameter('idDriver');
+         $drivers = Driver::select(
+            'drivers.id',
+            'nameDriver',
+            'lastNameDP',
+            'lastNameDM',
+            'travels.id as idTravel',
+            'travels.status_travel',
+            'travels.status_notification',
+            'travels.type_travel',
+            'travels.date_travel',
+            'travels.hour_travel'
+        )
+            ->join('travels', 'travels.id_driver', '=', 'drivers.id')
+            ->where('drivers.id',  $idDriver)
+            ->orderBy('travels.id', 'desc')
+            ->get();
+        return $drivers;
     }
 
     public function updateStatusUser(Request $request)
@@ -406,6 +439,36 @@ class UserController extends Controller
             ->where('statusDriver', 1)
             ->count();
         return $count;
+    }
+
+    public function travelsNotifications()
+    {
+        $drivers = Driver::select(
+            'drivers.id',
+            'nameDriver',
+            'lastNameDP',
+            'lastNameDM',
+            'travels.id as idTravel',
+            'travels.status_travel',
+            'travels.type_travel',
+            'travels.date_travel',
+            'travels.hour_travel',
+            'travels.status_notification'
+        )
+            ->join('travels', 'travels.id_driver', '=', 'drivers.id')
+            ->where('drivers.id', '!=', 6)
+            ->where('statusDriver', 1)
+            // ->groupBy('nameDriver')
+            ->orderBy('travels.id', 'desc')
+            ->get();
+        return $drivers;
+    }
+
+    public function removeNotifications(){
+        $changeStatus = Travel::where('id_driver', '>=', 1)->update([
+            'status_notification' => 'Visto'
+        ]);
+        return $changeStatus;
     }
 
     /**

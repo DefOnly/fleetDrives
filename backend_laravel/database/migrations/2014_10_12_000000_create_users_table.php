@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('lastNameDM')->nullable();
             $table->string('enterprise')->nullable();
             $table->string('email')->nullable();
+            $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->integer('statusDriver')->default(1);

@@ -54,6 +54,7 @@ class JWTGuard implements Guard
      * @param  \Tymon\JWTAuth\JWT  $jwt
      * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return void
      */
     public function __construct(JWT $jwt, UserProvider $provider, Request $request)
@@ -85,9 +86,9 @@ class JWTGuard implements Guard
     /**
      * Get the currently authenticated user or throws an exception.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable
-     *
      * @throws \Tymon\JWTAuth\Exceptions\UserNotDefinedException
+     *
+     * @return \Illuminate\Contracts\Auth\Authenticatable
      */
     public function userOrFail()
     {
@@ -102,6 +103,7 @@ class JWTGuard implements Guard
      * Validate a user's credentials.
      *
      * @param  array  $credentials
+     *
      * @return bool
      */
     public function validate(array $credentials = [])
@@ -114,6 +116,7 @@ class JWTGuard implements Guard
      *
      * @param  array  $credentials
      * @param  bool  $login
+     *
      * @return bool|string
      */
     public function attempt(array $credentials = [], $login = true)
@@ -131,6 +134,7 @@ class JWTGuard implements Guard
      * Create a token for a user.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $user
+     *
      * @return string
      */
     public function login(JWTSubject $user)
@@ -145,6 +149,7 @@ class JWTGuard implements Guard
      * Logout the user, thus invalidating the token.
      *
      * @param  bool  $forceForever
+     *
      * @return void
      */
     public function logout($forceForever = false)
@@ -160,6 +165,7 @@ class JWTGuard implements Guard
      *
      * @param  bool  $forceForever
      * @param  bool  $resetClaims
+     *
      * @return string
      */
     public function refresh($forceForever = false, $resetClaims = false)
@@ -171,6 +177,7 @@ class JWTGuard implements Guard
      * Invalidate the token.
      *
      * @param  bool  $forceForever
+     *
      * @return \Tymon\JWTAuth\JWT
      */
     public function invalidate($forceForever = false)
@@ -182,6 +189,7 @@ class JWTGuard implements Guard
      * Create a new token by User id.
      *
      * @param  mixed  $id
+     *
      * @return string|null
      */
     public function tokenById($id)
@@ -195,6 +203,7 @@ class JWTGuard implements Guard
      * Log a user into the application using their credentials.
      *
      * @param  array  $credentials
+     *
      * @return bool
      */
     public function once(array $credentials = [])
@@ -212,6 +221,7 @@ class JWTGuard implements Guard
      * Log the given User into the application.
      *
      * @param  mixed  $id
+     *
      * @return bool
      */
     public function onceUsingId($id)
@@ -229,6 +239,7 @@ class JWTGuard implements Guard
      * Alias for onceUsingId.
      *
      * @param  mixed  $id
+     *
      * @return bool
      */
     public function byId($id)
@@ -240,6 +251,7 @@ class JWTGuard implements Guard
      * Add any custom claims.
      *
      * @param  array  $claims
+     *
      * @return $this
      */
     public function claims(array $claims)
@@ -273,6 +285,7 @@ class JWTGuard implements Guard
      * Set the token.
      *
      * @param  \Tymon\JWTAuth\Token|string  $token
+     *
      * @return $this
      */
     public function setToken($token)
@@ -286,6 +299,7 @@ class JWTGuard implements Guard
      * Set the token ttl.
      *
      * @param  int  $ttl
+     *
      * @return $this
      */
     public function setTTL($ttl)
@@ -309,6 +323,7 @@ class JWTGuard implements Guard
      * Set the user provider used by the guard.
      *
      * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
+     *
      * @return $this
      */
     public function setProvider(UserProvider $provider)
@@ -342,6 +357,7 @@ class JWTGuard implements Guard
      * Set the current request instance.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return $this
      */
     public function setRequest(Request $request)
@@ -366,6 +382,7 @@ class JWTGuard implements Guard
      *
      * @param  mixed  $user
      * @param  array  $credentials
+     *
      * @return bool
      */
     protected function hasValidCredentials($user, $credentials)
@@ -376,7 +393,7 @@ class JWTGuard implements Guard
     /**
      * Ensure the JWTSubject matches what is in the token.
      *
-     * @return bool
+     * @return  bool
      */
     protected function validateSubject()
     {
@@ -392,9 +409,9 @@ class JWTGuard implements Guard
     /**
      * Ensure that a token is available in the request.
      *
-     * @return \Tymon\JWTAuth\JWT
-     *
      * @throws \Tymon\JWTAuth\Exceptions\JWTException
+     *
+     * @return \Tymon\JWTAuth\JWT
      */
     protected function requireToken()
     {
@@ -410,9 +427,10 @@ class JWTGuard implements Guard
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      *
      * @throws \BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {

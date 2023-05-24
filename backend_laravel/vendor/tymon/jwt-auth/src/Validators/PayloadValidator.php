@@ -41,6 +41,7 @@ class PayloadValidator extends Validator
      * Run the validations on the payload array.
      *
      * @param  \Tymon\JWTAuth\Claims\Collection  $value
+     *
      * @return \Tymon\JWTAuth\Claims\Collection
      */
     public function check($value)
@@ -55,9 +56,10 @@ class PayloadValidator extends Validator
      * the claims have the relevant type.
      *
      * @param  \Tymon\JWTAuth\Claims\Collection  $claims
-     * @return void
      *
      * @throws \Tymon\JWTAuth\Exceptions\TokenInvalidException
+     *
+     * @return void
      */
     protected function validateStructure(Collection $claims)
     {
@@ -70,10 +72,11 @@ class PayloadValidator extends Validator
      * Validate the payload timestamps.
      *
      * @param  \Tymon\JWTAuth\Claims\Collection  $claims
-     * @return \Tymon\JWTAuth\Claims\Collection
      *
      * @throws \Tymon\JWTAuth\Exceptions\TokenExpiredException
      * @throws \Tymon\JWTAuth\Exceptions\TokenInvalidException
+     *
+     * @return \Tymon\JWTAuth\Claims\Collection
      */
     protected function validatePayload(Collection $claims)
     {
@@ -84,9 +87,10 @@ class PayloadValidator extends Validator
      * Check the token in the refresh flow context.
      *
      * @param  \Tymon\JWTAuth\Claims\Collection  $claims
-     * @return \Tymon\JWTAuth\Claims\Collection
      *
      * @throws \Tymon\JWTAuth\Exceptions\TokenExpiredException
+     *
+     * @return \Tymon\JWTAuth\Claims\Collection
      */
     protected function validateRefresh(Collection $claims)
     {
@@ -97,6 +101,7 @@ class PayloadValidator extends Validator
      * Set the required claims.
      *
      * @param  array  $claims
+     *
      * @return $this
      */
     public function setRequiredClaims(array $claims)
@@ -110,6 +115,7 @@ class PayloadValidator extends Validator
      * Set the refresh ttl.
      *
      * @param  int  $ttl
+     *
      * @return $this
      */
     public function setRefreshTTL($ttl)

@@ -46,6 +46,7 @@ class Illuminate implements Storage
      * Constructor.
      *
      * @param  \Illuminate\Contracts\Cache\Repository  $cache
+     *
      * @return void
      */
     public function __construct(CacheContract $cache)
@@ -59,6 +60,7 @@ class Illuminate implements Storage
      * @param  string  $key
      * @param  mixed  $value
      * @param  int  $minutes
+     *
      * @return void
      */
     public function add($key, $value, $minutes)
@@ -79,6 +81,7 @@ class Illuminate implements Storage
      *
      * @param  string  $key
      * @param  mixed  $value
+     *
      * @return void
      */
     public function forever($key, $value)
@@ -90,6 +93,7 @@ class Illuminate implements Storage
      * Get an item from storage.
      *
      * @param  string  $key
+     *
      * @return mixed
      */
     public function get($key)
@@ -101,6 +105,7 @@ class Illuminate implements Storage
      * Remove an item from storage.
      *
      * @param  string  $key
+     *
      * @return bool
      */
     public function destroy($key)

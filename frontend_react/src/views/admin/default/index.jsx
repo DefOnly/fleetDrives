@@ -60,7 +60,8 @@ import { useState, useEffect } from "react";
 import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
 import tableDataComplex from "views/admin/default/variables/tableDataComplex.json";
 import axios from "axios";
-import { FaRoute } from "react-icons/fa";
+import { FaRoute, FaChild } from "react-icons/fa";
+import General from "views/admin/profile/components/General";
 
 export default function UserReports() {
   // Chakra Color Mode
@@ -146,6 +147,16 @@ export default function UserReports() {
         )}
         {!loading && (
           <MiniStatistics
+          startContent={
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={boxBg}
+              icon={
+                <Icon w="32px" h="32px" as={MdFileCopy} color={brandColor} />
+              }
+            />
+          }
             growth={parseInt(100 / numberDrivers) + " %"}
             name="Contratos Activos"
             value={numberDrivers}
@@ -191,31 +202,29 @@ export default function UserReports() {
 
         {!loading && (
           <MiniStatistics
-            startContent={
-              <IconBox
-                w="56px"
-                h="56px"
-                bg={boxBg}
-                icon={
-                  <Icon w="32px" h="32px" as={MdFileCopy} color={brandColor} />
-                }
-              />
-            }
+          startContent={
+            <Avatar color="white" bg='linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)' icon={<FaChild fontSize='2rem' />} />
+          }
             name="Total Estudiantes"
             value={numberStudents}
           />
         )}
       </SimpleGrid>
-
+      <General
+          gridArea={{ base: "2 / 1 / 3 / 2", lg: "1 / 2 / 2 / 3" }}
+          minH="365px"
+          pe="20px"
+        />
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
-        <ComplexTable
+        
+        {/* <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
-        />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
+        /> */}
+        {/* <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px"> */}
           {/* <Tasks /> */}
-          <MiniCalendar h="100%" minW="100%" selectRange={false} />
-        </SimpleGrid>
+          {/* <MiniCalendar h="100%" minW="100%" selectRange={false} />
+        </SimpleGrid> */}
       </SimpleGrid>
 
       {/* <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px'>

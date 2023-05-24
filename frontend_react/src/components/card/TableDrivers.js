@@ -44,6 +44,8 @@ import {
   Stack,
   Badge,
   Tooltip,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { useState, useCallback } from "react";
 // import TablesTableRow from "components/card/";
@@ -79,7 +81,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
   const [alertErrorUpdate, setAlertErrorUpdate] = useState(false);
   const [alertSuccessUpdate, setAlertSuccessUpdate] = useState(false);
   let count = 1;
-  const NAME_REGEX = /^[ a-zA-ZÀ-ú]+$/;
+  const NAME_REGEX = /^[A-Za-zÀ-ú\s!@#%^&*)(+=._'´`"-]*$/;
   const initialValues = {
     rut: "",
   };
@@ -101,6 +103,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
   const [successPin, setSuccessPin] = useState(false);
   const [errorPin, setErrorPin] = useState(false);
   const [messageSuccess, setMessageSuccess] = useState("");
+  const [codeSended, setCodeSended] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -122,7 +125,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
     const getAllUsers = await axios.get(`${endPoint}/getAllUsers/`);
     let users = getAllUsers.data;
     let rut = values.rut;
-    let password = rut.replaceAll('.', "");
+    let password = rut.replaceAll(".", "");
     let duplicateRut = checkDuplicateRut(users, rut);
     if (duplicateRut.length > 0) {
       setRutError(true);
@@ -260,6 +263,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
     setModalAllow(false);
     setModalDriver(false);
     setModalUpdateDriver(false);
+    setCodeSended(false);
     onOpen();
   };
 
@@ -269,6 +273,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
     setModalDelete(false);
     setModalDriver(false);
     setModalUpdateDriver(false);
+    setCodeSended(false);
     onOpen();
   };
 
@@ -376,6 +381,7 @@ const TableDrivers = ({ drivers, countDriver }) => {
   };
 
   const sendCodeVerification = async () => {
+    setCodeSended(true);
     const pinArray = [
       getRandomInt(10),
       getRandomInt(10),
@@ -408,7 +414,9 @@ const TableDrivers = ({ drivers, countDriver }) => {
             action: 2,
           })
           .then(async (response) => {
-            const responseDrivers = await axios.get(`${endPoint}/driversCheckStatus/`);
+            const responseDrivers = await axios.get(
+              `${endPoint}/driversCheckStatus/`
+            );
             let resultDrivers = responseDrivers.data;
             let update = true;
             UpdateStateDrivers(resultDrivers, update);
@@ -421,7 +429,9 @@ const TableDrivers = ({ drivers, countDriver }) => {
             action: 3,
           })
           .then(async (response) => {
-            const responseDrivers = await axios.get(`${endPoint}/driversCheckStatus/`);
+            const responseDrivers = await axios.get(
+              `${endPoint}/driversCheckStatus/`
+            );
             let resultDrivers = responseDrivers.data;
             let update = true;
             UpdateStateDrivers(resultDrivers, update);
@@ -688,10 +698,9 @@ const TableDrivers = ({ drivers, countDriver }) => {
           </ModalContent>
         </Modal>
       )}
-
-      <Flex px="25px" justify="space-between" mb="20px" align="center">
+      {/* <Flex px="25px" justify="space-between" mb="20px" align="center">
         <Menu />
-      </Flex>
+      </Flex> */}
       <Table variant="simple" color="gray.500" mb="24px">
         <Thead>
           <Tr>
@@ -1189,6 +1198,18 @@ const TableDrivers = ({ drivers, countDriver }) => {
                     </Alert>
                   </Box>
                 </SlideFade>
+                <SlideFade startingHeight={1} in={codeSended}>
+                  <Alert status="success">
+                    <AlertIcon />
+                    <Box>
+                      <AlertTitle>¡Código de validación enviado!</AlertTitle>
+                      <AlertDescription>
+                        Se ha enviado el código de 4 dígitos a su teléfono
+                        registrado.
+                      </AlertDescription>
+                    </Box>
+                  </Alert>
+                </SlideFade>
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={onClose}>
                     Cancelar
@@ -1264,6 +1285,18 @@ const TableDrivers = ({ drivers, countDriver }) => {
                       ¡El pin ingresado es incorrecto, intente nuevamente!
                     </Alert>
                   </Box>
+                </SlideFade>
+                <SlideFade startingHeight={1} in={codeSended}>
+                  <Alert status="success">
+                    <AlertIcon />
+                    <Box>
+                      <AlertTitle>¡Código de validación enviado!</AlertTitle>
+                      <AlertDescription>
+                        Se ha enviado el código de 4 dígitos a su teléfono
+                        registrado.
+                      </AlertDescription>
+                    </Box>
+                  </Alert>
                 </SlideFade>
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={onClose}>

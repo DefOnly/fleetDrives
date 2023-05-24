@@ -67,7 +67,7 @@ import {
 import Card from "components/card/Card";
 import { AndroidLogo, AppleLogo, WindowsLogo } from "components/icons/Icons";
 import Menu from "components/menu/MainMenu";
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef, useContext } from "react";
 import {
   useGlobalFilter,
   usePagination,
@@ -84,14 +84,15 @@ import {
   MdOutlineNoTransfer,
   MdCheckCircle,
 } from "react-icons/md";
-import { FaRoute } from "react-icons/fa";
+import { FaRoute, FaCheckCircle } from "react-icons/fa";
 import TimePicker from "react-time-picker";
 import axios from "axios";
-import { MinusIcon } from '@chakra-ui/icons'
+import { MinusIcon } from "@chakra-ui/icons";
+import { PlacesContext } from "contexts/places/PlacesContext";
 
 export default function TravelPlanning(props) {
   const { columnsData, tableData } = props;
-
+  const { socket, user } = useContext(PlacesContext);
   const columns = useMemo(() => columnsData, [columnsData]);
   const brandColor = useColorModeValue("brand.500", "white");
   const data = useMemo(() => tableData, [tableData]);
@@ -123,6 +124,8 @@ export default function TravelPlanning(props) {
   const [alertDriverSuccess, setAlertDriverSuccess] = useState(false);
   const [students, setStudents] = useState(false);
   const [modalTravel, setModalTravel] = useState(false);
+  const [drawerTravel, setDrawerTravel] = useState(false);
+  const [placement, setPlacement] = useState("right");
   const initialFocusRef = useRef();
 
   const handleSizeClick = async (newSize, id_driver) => {
@@ -138,6 +141,7 @@ export default function TravelPlanning(props) {
       setIdDriver(response.data[0].idDriver);
       setModalTravel(true);
       setStudents(false);
+      setDrawerTravel(false);
       onOpen();
     }
   };
@@ -151,15 +155,17 @@ export default function TravelPlanning(props) {
       resultArray.push(value);
     }
     resultArray.push(date);
-    let today = new Date(new Date().setDate(new Date().getDate() - 1));
+    // let today = new Date(new Date().setDate(new Date().getDate() - 1));
+    let today = new Date(new Date().setDate(new Date().getDate()));
     let setToday = today.toISOString().slice(0, 10).replace("T", " ");
     let splitArray = setToday.split("-");
-
     if (resultArray.length === 6) {
       let newArray = resultArray.slice(4, 6);
       newArray.push(resultArray[0].concat(" " + resultArray[3]));
       let splitNewArray = newArray[1].split("-");
       newArray.push(idDriver);
+      console.log(splitNewArray);
+      console.log(splitArray);
       if (
         splitNewArray[1] < splitArray[1] ||
         splitNewArray[2] <= splitArray[2]
@@ -169,6 +175,10 @@ export default function TravelPlanning(props) {
           setShowError(false);
         }, "2000");
       } else {
+        socket.emit("sendNotification", {
+          senderName: user,
+          receiverId: newArray[3]
+        });
         newArray.push(getIdStudents(driverStudent));
         await axios.post(`${endPoint}/AddDateTimeTravel/`, {
           type_travel: newArray[0],
@@ -200,6 +210,10 @@ export default function TravelPlanning(props) {
           setShowError(false);
         }, "2000");
       } else {
+        socket.emit("sendNotification", {
+          senderName: user,
+          receiverId: resultArray[2]
+        });
         await axios.post(`${endPoint}/AddDateTravel/`, {
           type_travel: resultArray[0],
           date: resultArray[1],
@@ -223,6 +237,20 @@ export default function TravelPlanning(props) {
 
   const showInfoTravel = async (idTravel) => {
     const response = await axios.get(`${endPoint}/showInfoTravel/${idTravel}/`);
+    setShowTravel(response.data);
+    let date = response.data[0].date_travel;
+    let dateFormat = date.split("-").reverse().join("/");
+    setDateFormat(dateFormat);
+  };
+
+  const showInfoLastTravel = async (idTravel) => {
+    setStudents(false);
+    setModalTravel(false);
+    setDrawerTravel(true);
+    onOpen();
+    const response = await axios.get(
+      `${endPoint}/showInfoLastTravel/${idTravel}/`
+    );
     setShowTravel(response.data);
     let date = response.data[0].date_travel;
     let dateFormat = date.split("-").reverse().join("/");
@@ -257,7 +285,25 @@ export default function TravelPlanning(props) {
     setDriverStudent(response.data);
     setStudents(true);
     setModalTravel(false);
+    setDrawerTravel(false);
     onOpen();
+  };
+
+  const isAfterDate = (date) => {
+    const currDate = Date.now();
+    const today = new Date(currDate);
+    const dateTravel = date.split("-");
+    let year = parseInt(dateTravel[0]);
+    let month = parseInt(dateTravel[1]);
+    let day = parseInt(dateTravel[2]);
+    if (
+      today.getFullYear() >= year ||
+      today.getMonth() + 1 >= month ||
+      today.getDate() >= day
+    ) {
+      return true;
+    }
+    return false;
   };
 
   useEffect(() => {
@@ -265,7 +311,9 @@ export default function TravelPlanning(props) {
     const getDriverTravel = async () => {
       try {
         const { data: response } = await axios.get(`${endPoint}/driverTravel/`);
-        if (isMounted) setDriverTravel(response);
+        if (isMounted) {
+          setDriverTravel(response);
+        }
       } catch (error) {
         console.error(error.message);
       }
@@ -372,7 +420,7 @@ export default function TravelPlanning(props) {
             </AlertTitle>
           </Alert>
         </ScaleFade>
-        <Menu />
+        {/* <Menu /> */}
       </Flex>
       {loading && (
         <Spinner
@@ -426,9 +474,21 @@ export default function TravelPlanning(props) {
                         <DrawerContent>
                           <DrawerCloseButton />
                           <DrawerHeader fontSize="2rem">
-                            Estudiantes
-                            <Text fontSize='2xl'>Cantidad Actual: {driverStudent.length === 0 ? "0" : driverStudent.length}</Text>
-                            <Text position="absolute" left="24rem" top="3.8rem" fontSize='2xl'>Nivel:</Text>
+                            Estudiantes Asignados
+                            <Text fontSize="2xl">
+                              Cantidad Actual:{" "}
+                              {driverStudent.length === 0
+                                ? "0"
+                                : driverStudent.length}
+                            </Text>
+                            <Text
+                              position="absolute"
+                              left="24rem"
+                              top="3.8rem"
+                              fontSize="2xl"
+                            >
+                              Nivel:
+                            </Text>
                           </DrawerHeader>
                           <DrawerBody>
                             {driverStudent.length === 0 ? (
@@ -449,13 +509,89 @@ export default function TravelPlanning(props) {
                                         " " +
                                         student.lastNameP +
                                         " " +
-                                        student.lastNameM} <Icon as={MinusIcon} /><Icon as={MinusIcon} /><Icon as={MinusIcon} /> {student.nameLevel}
+                                        student.lastNameM}{" "}
+                                      <Icon as={MinusIcon} />
+                                      <Icon as={MinusIcon} />
+                                      <Icon as={MinusIcon} />{" "}
+                                      {student.nameLevel}
                                     </ListItem>
+                                    <Text pt="2" fontSize="sm">
+                                      Comuna: {student.nameProvince} <br></br>
+                                      Sector: {student.zone} <br></br>
+                                      Dirección:{" "}
+                                      {student.address
+                                        ? student.address
+                                        : "Sin dirección registrada"}
+                                    </Text>
                                     <br></br>
                                   </List>
                                 </>
                               ))
                             )}
+                          </DrawerBody>
+                        </DrawerContent>
+                      </Drawer>
+                    )}
+                    {drawerTravel && (
+                      <Drawer
+                        placement={placement}
+                        onClose={onClose}
+                        isOpen={isOpen}
+                        size={size}
+                      >
+                        <DrawerOverlay />
+                        <DrawerContent>
+                          <DrawerCloseButton />
+                          <DrawerHeader fontSize="2rem">
+                            Estudiantes recogidos por conductor
+                            </DrawerHeader>
+                          <DrawerBody>
+                            <Text fontSize="2xl" fontWeight="bold">
+                              Cantidad:{" "}
+                              {showTravel.length === 0
+                                ? "0"
+                                : showTravel.length}
+                            </Text>
+                            <Text pt="2" fontSize="m" fontWeight="bold">
+                              Fecha:{" "}
+                              {typeof showTravel[0].date_travel === "undefined"
+                                ? ""
+                                : dateFormat}{" "}
+                              {typeof showTravel[0].hour_travel === "undefined"
+                                ? ""
+                                : showTravel[0].hour_travel !== null
+                                ? "Hora: " + showTravel[0].hour_travel
+                                : ""}
+                              <br></br>
+                              Tipo de Viaje:{" "}
+                              {typeof showTravel[0].type_travel === "undefined"
+                                ? ""
+                                : showTravel[0].type_travel === "1"
+                                ? "Ida (Escuela Rural Básica Riñinahue)"
+                                : "Vuelta (direcciones de estudiantes)"}
+                            </Text>
+                            <br></br>
+                            {showTravel.map((student) => (
+                              <>
+                                <List spacing={3}>
+                                  <ListItem key={student.id}>
+                                    <ListIcon
+                                      as={MdCheckCircle}
+                                      color="green.500"
+                                    />
+                                    {student.name +
+                                      " " +
+                                      student.lastNameP +
+                                      " " +
+                                      student.lastNameM}{" "}
+                                    <Icon as={MinusIcon} />
+                                    <Icon as={MinusIcon} />
+                                    <Icon as={MinusIcon} /> <strong>Nivel: </strong>{student.nameLevel}
+                                  </ListItem>
+                                  <br></br>
+                                </List>
+                              </>
+                            ))}
                           </DrawerBody>
                         </DrawerContent>
                       </Drawer>
@@ -477,7 +613,8 @@ export default function TravelPlanning(props) {
                             </Button>
                           </>
                         ))
-                      : sizes.map((size) => (
+                      : driver.status_travel === "1"
+                      ? sizes.map((size) => (
                           <>
                             <Popover>
                               <PopoverTrigger>
@@ -502,7 +639,7 @@ export default function TravelPlanning(props) {
                                   Información del viaje
                                 </PopoverHeader>
                                 <PopoverBody height="5rem" textAlign="left">
-                                  Día:{" "}
+                                  Fecha:{" "}
                                   {typeof showTravel[0].date_travel ===
                                   "undefined"
                                     ? ""
@@ -593,7 +730,154 @@ export default function TravelPlanning(props) {
                               </PopoverContent>
                             </Popover>
                           </>
-                        ))}
+                        ))
+                      : driver.status_travel === "2"
+                      ? sizes.map((size) => (
+                          <>
+                            <Popover>
+                              <PopoverTrigger>
+                                <Button
+                                  onClick={() =>
+                                    showInfoTravel(driver.idTravel)
+                                  }
+                                  colorScheme="messenger"
+                                >
+                                  Ver viaje
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                color="white"
+                                bg="blue.800"
+                                borderColor="blue.800"
+                                width="23rem"
+                              >
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader fontWeight="bold">
+                                  Información del viaje
+                                </PopoverHeader>
+                                <PopoverBody height="5rem" textAlign="left">
+                                  Fecha:{" "}
+                                  {typeof showTravel[0].date_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : dateFormat}{" "}
+                                  {typeof showTravel[0].hour_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].hour_travel !== null
+                                    ? "Hora: " + showTravel[0].hour_travel
+                                    : ""}
+                                  <br></br>
+                                  Tipo de Viaje:{" "}
+                                  {typeof showTravel[0].type_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].type_travel === "1"
+                                    ? "Ida (Escuela Rural Básica Riñinahue)"
+                                    : "Vuelta (direcciones de estudiantes)"}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              disabled={true}
+                              background="teal"
+                              color="white"
+                              key={size}
+                              m={4}
+                            >
+                              Solicitar viaje
+                            </Button>
+                            <Button disabled={true} colorScheme="red">
+                              Cancelar solicitud
+                            </Button>
+                          </>
+                        ))
+                      : driver.status_travel === "3"
+                      ? sizes.map((size) => (
+                          <>
+                            {/* <Popover>
+                              <PopoverTrigger> */}
+                            {isAfterDate(driver.date_travel) === true ? (
+                              <Button
+                                key={size}
+                                onClick={() =>
+                                  showInfoLastTravel(driver.idTravel)
+                                }
+                                colorScheme="messenger"
+                              >
+                                Último viaje
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => showInfoTravel(driver.idTravel)}
+                                colorScheme="messenger"
+                              >
+                                Ver viaje
+                              </Button>
+                            )}
+                            {/* </PopoverTrigger>
+                              <PopoverContent
+                                color="white"
+                                bg="blue.800"
+                                borderColor="blue.800"
+                                width="23rem"
+                              >
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverHeader fontWeight="bold">
+                                  Información del viaje
+                                </PopoverHeader>
+                                <PopoverBody height="5rem" textAlign="left">
+                                  Fecha:{" "}
+                                  {typeof showTravel[0].date_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : dateFormat}{" "}
+                                  {typeof showTravel[0].hour_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].hour_travel !== null
+                                    ? "Hora: " + showTravel[0].hour_travel
+                                    : ""}
+                                  <br></br>
+                                  Tipo de Viaje:{" "}
+                                  {typeof showTravel[0].type_travel ===
+                                  "undefined"
+                                    ? ""
+                                    : showTravel[0].type_travel === "1"
+                                    ? "Ida (Escuela Rural Básica Riñinahue)"
+                                    : "Vuelta (direcciones de estudiantes)"}
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover> */}
+                            {isAfterDate(driver.date_travel) === true ? (
+                              <Button
+                                onClick={() => handleSizeClick(size, driver.id)}
+                                background="teal"
+                                color="white"
+                                key={size}
+                                m={4}
+                              >
+                                Nuevo viaje
+                              </Button>
+                            ) : (
+                              <Button
+                                disabled={true}
+                                background="teal"
+                                color="white"
+                                key={size}
+                                m={4}
+                              >
+                                Solicitar viaje
+                              </Button>
+                            )}
+                            <Button disabled={true} colorScheme="red">
+                              Cancelar solicitud
+                            </Button>
+                          </>
+                        ))
+                      : null}
                   </Td>
                   <Td>
                     {driver.status_travel === "1" ? (
@@ -622,6 +906,58 @@ export default function TravelPlanning(props) {
                           width="110px"
                         />
                         {/* #38A169 */}
+                      </>
+                    ) : driver.status_travel === "2" ? (
+                      <>
+                        <Icon
+                          color="#38A169"
+                          as={MdBusAlert}
+                          w="35px"
+                          h="35px"
+                          mt="4px"
+                        />
+                        <strong
+                          style={{ position: "relative", bottom: "0.6rem" }}
+                        >
+                          <Tooltip
+                            label="El conductor ha confirmado el viaje"
+                            aria-label="A tooltip"
+                          >
+                            Confirmado
+                          </Tooltip>
+                        </strong>
+                        <Skeleton
+                          startColor="green.400"
+                          endColor="green.900"
+                          height="15px"
+                          width="110px"
+                        />
+                      </>
+                    ) : driver.status_travel === "3" ? (
+                      <>
+                        <Icon
+                          color="#38A169"
+                          as={FaCheckCircle}
+                          w="34px"
+                          h="34px"
+                          mt="4px"
+                        />
+                        <strong
+                          style={{ position: "relative", bottom: "0.6rem" }}
+                        >
+                          <Tooltip
+                            label="El conductor ha completado el viaje, puede generar una nueva solicitud"
+                            aria-label="A tooltip"
+                          >
+                            Completado
+                          </Tooltip>
+                        </strong>
+                        {/* <Skeleton
+                          startColor="green.400"
+                          endColor="green.900"
+                          height="15px"
+                          width="110px"
+                        /> */}
                       </>
                     ) : (
                       <>
@@ -691,7 +1027,9 @@ export default function TravelPlanning(props) {
                   </AccordionItem>
                 </Accordion> */}
                 <br></br>
-                <FormLabel style={{fontSize:"1.2rem"}} as="legend">Fecha de viaje</FormLabel>
+                <FormLabel style={{ fontSize: "1.2rem" }} as="legend">
+                  Fecha de viaje
+                </FormLabel>
                 <br></br>
                 <Center>
                   <Calendar
@@ -747,7 +1085,7 @@ export default function TravelPlanning(props) {
                   </>
                 ) : null}
                 <br></br>
-                <FormLabel style={{fontSize:"1.2rem"}} as="legend">
+                <FormLabel style={{ fontSize: "1.2rem" }} as="legend">
                   <Icon w="25px" h="25px" as={FaRoute} color={brandColor} />
                   Tipo de viaje
                 </FormLabel>

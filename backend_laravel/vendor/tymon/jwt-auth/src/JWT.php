@@ -55,6 +55,7 @@ class JWT
      *
      * @param  \Tymon\JWTAuth\Manager  $manager
      * @param  \Tymon\JWTAuth\Http\Parser\Parser  $parser
+     *
      * @return void
      */
     public function __construct(Manager $manager, Parser $parser)
@@ -67,6 +68,7 @@ class JWT
      * Generate a token for a given subject.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
+     *
      * @return string
      */
     public function fromSubject(JWTSubject $subject)
@@ -80,6 +82,7 @@ class JWT
      * Alias to generate a token for a given user.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $user
+     *
      * @return string
      */
     public function fromUser(JWTSubject $user)
@@ -92,6 +95,7 @@ class JWT
      *
      * @param  bool  $forceForever
      * @param  bool  $resetClaims
+     *
      * @return string
      */
     public function refresh($forceForever = false, $resetClaims = false)
@@ -107,6 +111,7 @@ class JWT
      * Invalidate a token (add it to the blacklist).
      *
      * @param  bool  $forceForever
+     *
      * @return $this
      */
     public function invalidate($forceForever = false)
@@ -122,9 +127,9 @@ class JWT
      * Alias to get the payload, and as a result checks that
      * the token is valid i.e. not expired or blacklisted.
      *
-     * @return \Tymon\JWTAuth\Payload
-     *
      * @throws \Tymon\JWTAuth\Exceptions\JWTException
+     *
+     * @return \Tymon\JWTAuth\Payload
      */
     public function checkOrFail()
     {
@@ -135,6 +140,7 @@ class JWT
      * Check that the token is valid.
      *
      * @param  bool  $getPayload
+     *
      * @return \Tymon\JWTAuth\Payload|bool
      */
     public function check($getPayload = false)
@@ -169,9 +175,9 @@ class JWT
     /**
      * Parse the token from the request.
      *
-     * @return $this
-     *
      * @throws \Tymon\JWTAuth\Exceptions\JWTException
+     *
+     * @return $this
      */
     public function parseToken()
     {
@@ -208,6 +214,7 @@ class JWT
      * Convenience method to get a claim value.
      *
      * @param  string  $claim
+     *
      * @return mixed
      */
     public function getClaim($claim)
@@ -219,6 +226,7 @@ class JWT
      * Create a Payload instance.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
+     *
      * @return \Tymon\JWTAuth\Payload
      */
     public function makePayload(JWTSubject $subject)
@@ -230,6 +238,7 @@ class JWT
      * Build the claims array and return it.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
+     *
      * @return array
      */
     protected function getClaimsArray(JWTSubject $subject)
@@ -245,6 +254,7 @@ class JWT
      * Get the claims associated with a given subject.
      *
      * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
+     *
      * @return array
      */
     protected function getClaimsForSubject(JWTSubject $subject)
@@ -258,6 +268,7 @@ class JWT
      * Hash the subject model and return it.
      *
      * @param  string|object  $model
+     *
      * @return string
      */
     protected function hashSubjectModel($model)
@@ -269,6 +280,7 @@ class JWT
      * Check if the subject model matches the one saved in the token.
      *
      * @param  string|object  $model
+     *
      * @return bool
      */
     public function checkSubjectModel($model)
@@ -284,6 +296,7 @@ class JWT
      * Set the token.
      *
      * @param  \Tymon\JWTAuth\Token|string  $token
+     *
      * @return $this
      */
     public function setToken($token)
@@ -308,9 +321,9 @@ class JWT
     /**
      * Ensure that a token is available.
      *
-     * @return void
-     *
      * @throws \Tymon\JWTAuth\Exceptions\JWTException
+     *
+     * @return void
      */
     protected function requireToken()
     {
@@ -323,6 +336,7 @@ class JWT
      * Set the request instance.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return $this
      */
     public function setRequest(Request $request)
@@ -336,6 +350,7 @@ class JWT
      * Set whether the subject should be "locked".
      *
      * @param  bool  $lock
+     *
      * @return $this
      */
     public function lockSubject($lock)
@@ -390,9 +405,10 @@ class JWT
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return mixed
      *
      * @throws \BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {

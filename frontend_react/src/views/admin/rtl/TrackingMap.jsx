@@ -136,8 +136,49 @@ export default function TrackingMap() {
       return () => {
         isMounted = false;
       };
+    } else {
+      let idDriver = dato.id;
+      let isMounted = true;
+      async function getAllProvinces() {
+        const response = await axios.get(
+          `${endPoint}/getAllProvincesForDriver/${idDriver}/`
+        );
+        if (isMounted) {
+          setProvinces(response.data);
+        }
+      }
+      setIsLoading(false);
+      if (!isLoading) {
+        const map = new Map({
+          container: "mapDiv", // container ID
+          style: "mapbox://styles/mapbox/streets-v12", // style URL
+          center: !pointProvince ? userLocation : viewProvince, // starting position [lng, lat]
+          zoom: zoom, // starting zoom
+        });
+        const collegeLocationPopUp = new Popup().setHTML(
+          `<img src="https://www.diariofutrono.cl/files/62957cb21d73f_890x533.webp" width="500" height="600">
+          <h4 style="text-align: center"><strong>Escuela Rural Riñinahue</strong></h4>`
+        );
+        const collegeMarker = new Marker({ color: "#422afb" })
+          .setLngLat(userLocation)
+          .setPopup(collegeLocationPopUp)
+          .addTo(map);
+        const markerProvinces = provinces.map((provinces) => {
+          const newMarker = new Marker({ color: "#422afb" })
+            .setLngLat([provinces.longitude, provinces.latitude])
+            .addTo(map);
+          return newMarker;
+        });
+        setMap(map);
+      }
+      getAllProvinces();
+      return () => {
+        isMounted = false;
+      };
     }
   }, [zoom, userLocation, isLoading]);
+
+  console.log(provinces);
 
   const directionsApi = axios.create({
     baseURL: "https://api.mapbox.com/directions/v5/mapbox/driving",
@@ -184,7 +225,7 @@ export default function TrackingMap() {
     const responseDirectionsApi = await directionsApi.get(
       `/${userLocation.join(",")};${arrayLngLat.join(",")}`
     );
-    console.log(responseDirectionsApi);
+    // console.log(responseDirectionsApi);
     const { distance, duration, geometry } =
       responseDirectionsApi.data.routes[0];
     const { coordinates: coords } = geometry;
@@ -357,25 +398,116 @@ export default function TrackingMap() {
     );
   } else {
     return (
-      <Box pt={{ base: "180px", md: "80px", xl: "80px" }}>
-        <Alert
-          status="error"
-          variant="subtle"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          textAlign="center"
-          height="150px"
-        >
-          <AlertIcon boxSize="40px" mr={0} alignItems="center" />
-          <AlertTitle mt={4} mb={1} fontSize="lg">
-            ACCESO RESTRINGIDO!
-          </AlertTitle>
-          <AlertDescription maxWidth="sm">
-            Este modulo esta disponible solo para el usuario Administrador.
-          </AlertDescription>
-        </Alert>
-      </Box>
+      <>
+        <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
+          <div
+            id="mapDiv"
+            style={{
+              height: "70vh",
+              right: "0",
+              position: "fixed",
+              bottom: "10rem",
+              width: "83vw",
+            }}
+          >
+            {/* <Input
+          htmlSize={4}
+          width="250px"
+          position="fixed"
+          top="9rem"
+          left="20rem"
+          backgroundColor="white"
+          zIndex="999"
+          placeholder="Lugares"
+          onChange={onQueryChange}
+        /> */}
+            <Box
+              maxW="sm"
+              backgroundColor="white"
+              borderWidth="1px"
+              borderRadius="lg"
+              overflowY="scroll"
+              width="250px"
+              height="600px"
+              position="fixed"
+              top="9rem"
+              left="20rem"
+              zIndex="999"
+            >
+              {/* <Image src={property.imageUrl} alt={property.imageAlt} /> */}
+              {provinces.map((provinces) => (
+                <Box
+                  key={provinces.id}
+                  p="3"
+                  style={{
+                    backgroundColor:
+                      activeId === provinces.id ? background : null,
+                  }}
+                >
+                  <Divider />
+                  <Box display="flex" alignItems="baseline" mt={2}>
+                    <Box fontSize="0.9rem" fontWeight="bold" px="2">
+                      Comuna:
+                    </Box>
+                    <Badge
+                      color="gray.500"
+                      fontWeight="semibold"
+                      letterSpacing="wide"
+                      fontSize="xs"
+                      textTransform="uppercase"
+                      ml="2"
+                      borderRadius="full"
+                    >
+                      {provinces.nameProvince}
+                    </Badge>
+                  </Box>
+                  <Box fontWeight="bold" px="2">
+                    Estudiante: {provinces.name} {provinces.lastNameP}{" "}
+                    {provinces.lastNameM} <br />
+                    Dirección: {provinces.address === "" ? 'Sin dirección registrada' : provinces.address} <br />
+                  </Box>
+                  {kms.length !== 0 && activeId === provinces.id ? (
+                    <Box as="span" ml="2" color="gray.600" fontSize="sm">
+                      Kilómetros: {kms}, Tiempo: {minutes} minutos
+                    </Box>
+                  ) : null}
+                  <Box display="flex" mt="2" alignItems="center">
+                    <Box as="span" ml="2" color="gray.600" fontSize="sm">
+                      <Button
+                        onClick={() =>
+                          locationProvince(provinces.id, [
+                            parseFloat(provinces.longitude),
+                            parseFloat(provinces.latitude),
+                          ])
+                        }
+                        mt="0.3rem"
+                        fontSize="0.9rem"
+                        p={1.5}
+                        variant="brand"
+                      >
+                        Ubicación
+                      </Button>
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </div>
+          <Button
+            onClick={locationOrigin}
+            style={{
+              position: "fixed",
+              top: "140px",
+              right: "20px",
+              // zIndex: "1",
+              color: "white",
+            }}
+            colorScheme="cyan"
+          >
+            Escuela Rural Riñinahue
+          </Button>
+        </Box>
+      </>
     );
   }
 }

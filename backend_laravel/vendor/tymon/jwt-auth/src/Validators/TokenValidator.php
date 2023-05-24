@@ -19,6 +19,7 @@ class TokenValidator extends Validator
      * Check the structure of the token.
      *
      * @param  string  $value
+     *
      * @return string
      */
     public function check($value)
@@ -28,9 +29,10 @@ class TokenValidator extends Validator
 
     /**
      * @param  string  $token
-     * @return string
      *
      * @throws \Tymon\JWTAuth\Exceptions\TokenInvalidException
+     *
+     * @return string
      */
     protected function validateStructure($token)
     {

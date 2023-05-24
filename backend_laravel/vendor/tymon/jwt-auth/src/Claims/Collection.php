@@ -20,6 +20,7 @@ class Collection extends IlluminateCollection
      * Create a new collection.
      *
      * @param  mixed  $items
+     *
      * @return void
      */
     public function __construct($items = [])
@@ -33,6 +34,7 @@ class Collection extends IlluminateCollection
      * @param  string  $name
      * @param  callable  $callback
      * @param  mixed  $default
+     *
      * @return \Tymon\JWTAuth\Claims\Claim
      */
     public function getByClaimName($name, callable $callback = null, $default = null)
@@ -46,6 +48,7 @@ class Collection extends IlluminateCollection
      * Validate each claim under a given context.
      *
      * @param  string  $context
+     *
      * @return $this
      */
     public function validate($context = 'payload')
@@ -67,6 +70,7 @@ class Collection extends IlluminateCollection
      * Determine if the Collection contains all of the given keys.
      *
      * @param  mixed  $claims
+     *
      * @return bool
      */
     public function hasAllClaims($claims)
@@ -98,6 +102,7 @@ class Collection extends IlluminateCollection
      * Ensure that the given claims array is keyed by the claim name.
      *
      * @param  mixed  $items
+     *
      * @return array
      */
     private function sanitizeClaims($items)

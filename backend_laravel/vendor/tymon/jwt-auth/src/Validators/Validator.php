@@ -23,6 +23,7 @@ abstract class Validator implements ValidatorContract
      * Helper function to return a boolean.
      *
      * @param  array  $value
+     *
      * @return bool
      */
     public function isValid($value)
@@ -40,6 +41,7 @@ abstract class Validator implements ValidatorContract
      * Run the validation.
      *
      * @param  array  $value
+     *
      * @return void
      */
     abstract public function check($value);

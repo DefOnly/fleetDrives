@@ -77,7 +77,8 @@ export default function Students(props) {
   const initialValues = {
     rut: ""
   };
-  const NAME_REGEX = /^[ a-zA-ZÀ-ú]+$/;
+  const NAME_REGEX = /^[A-Za-zÀ-ú\s!@#%^&*)(+=._'´`"-]*$/;
+  // const NAME_REGEX = /^[ a-zA-ZÀ-ú]+$/;
   const EMAIL_REGEX = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
   const [formValues, setFormValues] = useState(initialValues);
   const [warningDriver, setWarningDriver] = useState(false);

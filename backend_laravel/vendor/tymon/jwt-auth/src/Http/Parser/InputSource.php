@@ -22,6 +22,7 @@ class InputSource implements ParserContract
      * Try to parse the token from the request input source.
      *
      * @param  \Illuminate\Http\Request  $request
+     *
      * @return null|string
      */
     public function parse(Request $request)

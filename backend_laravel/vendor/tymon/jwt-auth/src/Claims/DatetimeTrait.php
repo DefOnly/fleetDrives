@@ -29,9 +29,10 @@ trait DatetimeTrait
      * Set the claim value, and call a validate method.
      *
      * @param  mixed  $value
-     * @return $this
      *
      * @throws \Tymon\JWTAuth\Exceptions\InvalidClaimException
+     *
+     * @return $this
      */
     public function setValue($value)
     {
@@ -62,6 +63,7 @@ trait DatetimeTrait
      * Determine whether the value is in the future.
      *
      * @param  mixed  $value
+     *
      * @return bool
      */
     protected function isFuture($value)
@@ -73,6 +75,7 @@ trait DatetimeTrait
      * Determine whether the value is in the past.
      *
      * @param  mixed  $value
+     *
      * @return bool
      */
     protected function isPast($value)
@@ -84,6 +87,7 @@ trait DatetimeTrait
      * Set the leeway in seconds.
      *
      * @param  int  $leeway
+     *
      * @return $this
      */
     public function setLeeway($leeway)
